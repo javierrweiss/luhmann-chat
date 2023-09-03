@@ -52,10 +52,56 @@ Run that uberjar:
 
 If you remove `version` from `build.clj`, the uberjar will become `target/luhmann-chat-standalone.jar`.
 
-## Options
+## Desarrollo
 
-FIXME: listing of options this app accepts.
+Este proyecto usa libpython-clj. Para usar libpython-clj hay que tener en cuenta qué entorno de Python está instalado en nuestro computador.
+Si no tenemos ni Conda, ni pyenv, sencillamente podemos hacer lo siguiente:
 
+```clojure 
+  (ns xxx.xxx
+  (:require [libpython-clj2.require :refer [require-python]]
+            [libpython-clj2.python :refer [py. py.. py.-] :as py]))
+ ```
+ Si, en cambio tenemos Conda, debemos hacerlo así, si no tenemos un entorno virtual activado:
+
+ ```clojure
+ (ns xxx.xxx
+  (:require [libpython-clj2.python :as py :refer [py. py.. py.-]]))
+
+  (py/initialize! :python-executable (str (System/getenv "CONDA_DIR") "/bin/python3.10") 
+                  :library-path (str (System/getenv "CONDA_DIR") "/lib/libpython3.10.so"))
+ ```
+  O así, si tenemos un entorno virtual activado:
+```clojure 
+  (ns xxx.xxx
+  (:require [libpython-clj2.python :as py]))
+  
+  (py/initialize! :python-executable "/opt/anaconda3/envs/my_env/bin/python3.7"
+                :library-path "/opt/anaconda3/envs/my_env/lib/libpython3.7m.so")
+```
+Siempre es mejor tener un entorno virtual. Con Conda hacer lo siguiente:
+
+ ```bash
+ conda create -n <nombre-del-entorno>
+ ```
+ 
+ ```bash
+ conda init bash
+ ```
+
+ ```bash
+ conda activate <nombre-del-entorno>
+ ```
+
+Y si tenemos pyenv, debemos seguir estas instrucciones: https://clj-python.github.io/libpython-clj/environments.html
+
+Y en todo caso, si nuestro JDK es java 17, debemos crear un alias en nuestro deps.edn con lo siguiente:
+
+```edn 
+:jvm-opts ["--add-modules" "jdk.incubator.foreign"
+           "--enable-native-access=ALL-UNNAMED"]
+```
+Para importar paquetes primero hay que instalarlos con el gestor de paquetes que se esté usando, sea pip o conda. 
 ## Examples
 
 ...

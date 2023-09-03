@@ -11,9 +11,10 @@
         com.cognitect.aws/api       {:mvn/version "0.8.686"}
         com.cognitect.aws/endpoints {:mvn/version "1.1.12.504"}
         com.cognitect.aws/s3        {:mvn/version "848.2.1413.0"}}
- :jvm-opts ["--add-modules" "jdk.incubator.foreign"
-            "--enable-native-access=ALL-UNNAMED"] 
+  
  :aliases{
+  :jdk-17 {:jvm-opts ["--add-modules" "jdk.incubator.foreign"
+                      "--enable-native-access=ALL-UNNAMED"]}       
   :run-m {:main-opts ["-m" "javierweiss.luhmann-chat"]}
   :run-x {:ns-default javierweiss.luhmann-chat
           :exec-fn greet
