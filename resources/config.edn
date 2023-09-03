@@ -1,0 +1,6 @@
+{:db-name #env AWSDBNAME
+ :dptype "postgres"
+ :user #env AWSUSER
+ :password #env AWSPASS
+ :host #env AWSHOST 
+ :cohere-key #env COHEREKEY}
