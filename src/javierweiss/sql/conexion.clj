@@ -5,7 +5,7 @@
   (:import com.zaxxer.hikari.HikariDataSource))
  
 (def conf (configuracion))
-
+  
 (defn ejecuta-sentencia
   [sentence]
   (with-open [^HikariDataSource d (connection/->pool com.zaxxer.hikari.HikariDataSource
@@ -16,3 +16,9 @@
                                                       :host (:host conf)})]
     (jdbc/execute! d sentence)))
 
+
+(comment 
+   
+  (ejecuta-sentencia ["SELECT 1"])
+   
+  )

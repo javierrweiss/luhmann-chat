@@ -1,5 +1,5 @@
 {:db-name #env AWSDBNAME
- :dptype "postgres"
+ :dbtype "postgres"
  :user #env AWSUSER
  :password #env AWSPASS
  :host #env AWSHOST 

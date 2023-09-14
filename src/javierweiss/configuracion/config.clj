@@ -4,7 +4,7 @@
 
 (defn configuracion []
   (read-config (io/resource "config.edn")))
-
+ 
 (comment
   (configuracion)
   )
