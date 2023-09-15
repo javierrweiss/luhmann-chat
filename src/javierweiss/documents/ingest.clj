@@ -69,11 +69,5 @@
   
   (py.- (first doc1) metadata)
   
-  (def sp-doc1 (py. (token-splitter :chunk_size 750 :chunk_overlap 10) split_documents doc1))
   
-  (count sp-doc1)
-  
-  (first sp-doc1)
-  
-  (second sp-doc1)
   )
