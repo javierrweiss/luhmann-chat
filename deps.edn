@@ -16,6 +16,8 @@
 
  :aliases {:jdk-17 {:jvm-opts ["--add-modules" "jdk.incubator.foreign"
                                "--enable-native-access=ALL-UNNAMED"]}
+           :dev {:extra-paths ["dev"]
+                 :extra-deps {djblue/portal {:mvn/version "0.47.0"}}}
            :run-m {:main-opts ["-m" "javierweiss.luhmann-chat"]}
            :run-x {:ns-default javierweiss.luhmann-chat
                    :exec-fn greet

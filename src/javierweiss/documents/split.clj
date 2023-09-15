@@ -14,14 +14,14 @@
 
 (comment
   (def obras (ing/listar-obras))  
-  
+  (tap> obras)
   (let [doc (ing/cargar (obras 3))  
         page (py.- (first doc) page_content)]
       (py. (token-splitter :chunk_size 750 :chunk_overlap 10) create_documents page))
   
   (def sp (split splitter (ing/cargar (obras 3))))
   (count sp)
-  (second sp)
+  (tap> (second sp))
 
   (def sp-doc1 (py. (token-splitter :chunk_size 750 :chunk_overlap 10) split_documents doc))
   (count sp-doc1)
@@ -34,5 +34,6 @@
   (count sp2)
   (second sp2)
   (nth sp2 4)
-  
+  (tap> (nth sp2 10))
+   
   )
