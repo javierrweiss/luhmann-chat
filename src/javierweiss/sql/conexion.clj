@@ -2,7 +2,8 @@
   (:require [next.jdbc :as jdbc]
             [next.jdbc.connection :as connection]
             [javierweiss.configuracion.config :refer [configuracion]])
-  (:import com.zaxxer.hikari.HikariDataSource))
+  (:import com.zaxxer.hikari.HikariDataSource
+           java.sql.SQLException))
  
 (def conf (configuracion))
   
@@ -16,10 +17,11 @@
                                                       :host (:host conf)})]
     (jdbc/execute! d sentence))) 
 
-
 (defn activar-extension
   []
-  (ejecuta-sentencia ["CREATE EXTENSION IF NOT EXISTS vector"]))
+  (try
+    (ejecuta-sentencia ["CREATE EXTENSION IF NOT EXISTS vector"])
+    (catch SQLException e (.getMessage e))))
 
 (comment 
    
