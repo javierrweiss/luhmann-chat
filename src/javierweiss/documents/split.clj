@@ -13,6 +13,9 @@
   (py. (splitter :chunk_size size :chunk_overlap overlap) split_documents doc))
 
 (comment
+  
+  ;; Parece que hay conflictos entre Portal y python-clj
+  
   (def obras (ing/listar-obras))  
   (tap> obras)
   (let [doc (ing/cargar (obras 3))  
@@ -21,8 +24,8 @@
   
   (def sp (split splitter (ing/cargar (obras 3))))
   (count sp)
-  (tap> (second sp))
-
+  (tap> (second sp)) 
+  (tap> (range 1 500))
   (def sp-doc1 (py. (token-splitter :chunk_size 750 :chunk_overlap 10) split_documents doc))
   (count sp-doc1)
   (first sp-doc1) 
