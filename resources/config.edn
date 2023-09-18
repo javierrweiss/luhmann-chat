@@ -3,4 +3,5 @@
  :user #env AWSUSER
  :password #env AWSPASS
  :host #env AWSHOST 
- :cohere-key #env COHEREKEY}
+ :cohere-key #env COHEREKEY
+ :bucket-name "luhmann-bucket"}
