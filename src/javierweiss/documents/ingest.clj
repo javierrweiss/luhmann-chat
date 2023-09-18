@@ -32,8 +32,8 @@
 
 (defn crear-documentos
   []
-  (let [obras (listar-obras)]
-    (map (fn [doc] (cargar doc)) obras)))
+  (into []
+        (doseq [obra (listar-obras)] (cargar obra))))
 
 (comment
 
@@ -57,13 +57,17 @@
 
   (def obras (listar-obras))
 
-  (tap> obras)
- 
-  (cargar (second obras))
+  (count obras)
 
-  (-> (cargar (obras 3))
-      first
-      (py.- page_content))
+  (tap> obras) 
+  
+  (cargar (obras 16))
+
+  ;; El último texto, Trust and Power está dando problemas. Arroja excepción: FileNotFoundError: [Errno 2] No such file or directory: 'pdfinfo'
+  ;; pdf2image.exceptions.PDFInfoNotInstalledError: Unable to get page count. Is poppler installed and in PATH? <= Ya se instaló
+  
+  (doseq [obra obras] (println (cargar obra)))
+
 
   (crear-documentos)
 

@@ -1,6 +1,7 @@
 (ns javierweiss.documents.split
   (:require [libpython-clj2.python :as py :refer [py. py.. py.-]]
-            [javierweiss.documents.ingest :as ing :refer [crear-documentos]])) 
+            [javierweiss.documents.ingest :as ing :refer [crear-documentos]]
+            [javierweiss.utils.utils :as ut])) 
 
 (def splitter (py/from-import langchain.text_splitter CharacterTextSplitter))
 
@@ -49,10 +50,14 @@
   (type (into {} (py/get-attr (second sp2) "__dict__")))
   (nth sp2 4)
   (tap> (py.- (nth sp2 10) "page_content"))
+  (ut/py-obj->clj-map (second sp2))
+
 
   ;; Procesar todo
   
-  (eduction (comp (fn [doc] (split token-splitter doc true)) #(py/->jvm %)))
+  (def all (mapv (fn [doc] (split token-splitter doc true)) (crear-documentos)))
+
+  all
   
   (def all-docs (split-all-docs))
   )
