@@ -1,56 +1,33 @@
 # javierweiss/luhmann-chat
 
-FIXME: my new application.
+*luhmann-chat* es una prueba de concepto de una aplicación que usa RAG (*Retrieval Augmented Generation*) para chatear con una base de conocimiento específica, a saber, la teoría de los sistemas del sociólogo alemán Niklas Luhmann.
 
-## Installation
+## Diseño
 
-Download from https://github.com/javierweiss/luhmann-chat
+Esta aplicación cuenta con los siguientes componentes:
 
-## Usage
+    - Un bucket S3 para almacenar los archivos que representan parte de la obra de Niklas Luhmann en distintos idiomas (inglés, español y alemán).
 
-FIXME: explanation
+    - Una base de datos postgresql como base de datos de vectores empleando la extensión pgvector. Actualmente una instancia de AWS Aurora.
 
-Run the project directly, via `:exec-fn`:
+    - Uso de la plataforma **Cohere** como proveedora de los servicios de LLM.
 
-    $ clojure -X:run-x
-    Hello, Clojure!
+### Arquitectura de un RAG
 
-Run the project, overriding the name to be greeted:
+Implementar un RAG requiere completar los siguientes 8 pasos básicos:
 
-    $ clojure -X:run-x :name '"Someone"'
-    Hello, Someone!
+1. Ingerir los documentos.
+2. Dividir los documentos en trozos que puedan ser procesados por el LLM (*Large Language Model*).
+3. Convertir en tokens las cadenas de texto y contar los tokens para que calcen dentro del límite tolerado por la API del LLM.
+4. Crear *embeddings*  de esos documentos ya reducidos en tamaño.
+5. Almacenar esos *embeddings* en una base de datos de vectores.
+6. Tomar el input del usuario y crear un *embedding* del mismo. 
+7. Emplear algún algoritmo de similaridad para recuperar registros en la base de datos de vectores.
+8. Pasarle los resultados al modelo del LLM como contexto para producir una respuesta. 
 
-Run the project directly, via `:main-opts` (`-m javierweiss.luhmann-chat`):
+## Uso
 
-    $ clojure -M:run-m
-    Hello, World!
-
-Run the project, overriding the name to be greeted:
-
-    $ clojure -M:run-m Via-Main
-    Hello, Via-Main!
-
-Run the project's tests (they'll fail until you edit them):
-
-    $ clojure -T:build test
-
-Run the project's CI pipeline and build an uberjar (this will fail until you edit the tests to pass):
-
-    $ clojure -T:build ci
-
-This will produce an updated `pom.xml` file with synchronized dependencies inside the `META-INF`
-directory inside `target/classes` and the uberjar in `target`. You can update the version (and SCM tag)
-information in generated `pom.xml` by updating `build.clj`.
-
-If you don't want the `pom.xml` file in your project, you can remove it. The `ci` task will
-still generate a minimal `pom.xml` as part of the `uber` task, unless you remove `version`
-from `build.clj`.
-
-Run that uberjar:
-
-    $ java -jar target/luhmann-chat-0.1.0-SNAPSHOT.jar
-
-If you remove `version` from `build.clj`, the uberjar will become `target/luhmann-chat-standalone.jar`.
+En desarrollo...
 
 ## Desarrollo
 
@@ -62,7 +39,7 @@ Si no tenemos ni Conda, ni pyenv, sencillamente podemos hacer lo siguiente:
   (:require [libpython-clj2.require :refer [require-python]]
             [libpython-clj2.python :refer [py. py.. py.-] :as py]))
  ```
- Si, en cambio tenemos Conda, debemos hacerlo así, si no tenemos un entorno virtual activado:
+ Si, en cambio tenemos Conda, debemos hacerlo así si no tenemos un entorno virtual activado:
 
  ```clojure
  (ns xxx.xxx
@@ -102,19 +79,11 @@ Y en todo caso, si nuestro JDK es java 17, debemos crear un alias en nuestro dep
            "--enable-native-access=ALL-UNNAMED"]
 ```
 Para importar paquetes primero hay que instalarlos con el gestor de paquetes que se esté usando, sea pip o conda. 
-## Examples
 
-...
 
-### Bugs
+## Licencia
 
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
-
-## License
+Este desarrollo se inscribe dentro del proyecto de investigación **Recursos computacionales para investigación en torno a la Teoría de Sistemas Sociales** financiado por la Universidad de Flores (UFLO).
 
 Copyright © 2023 Jrivero
 
