@@ -1,7 +1,8 @@
 (ns javierweiss.documents.ingest
   (:require [libpython-clj2.python :as py :refer [py. py.. py.-]] 
             [cognitect.aws.client.api :as aws]
-            [javierweiss.configuracion.config :refer [configuracion]]))
+            [javierweiss.configuracion.config :refer [configuracion]]
+            [clojure.java.io :as io]))
 
 (def config (configuracion))
 
@@ -35,7 +36,21 @@
   (into []
         (doseq [obra (listar-obras)] (cargar obra))))
 
+(defn almacenar-archivo
+  "Recibe String indicando la ruta, el nombre correponde a la llave con que se va a identificar en S3 y un string indicando la carpera 
+   (/carpeta_X) -puede ser nil"
+  [ruta nombre carpeta]
+  (aws/invoke cliente-s3 {:op :PutObject :request {:Bucket (str (:bucket-name config) carpeta) 
+                                                   :Key nombre
+                                                   :Body (io/input-stream ruta)}}))
+
 (comment
+
+  (almacenar-archivo "/workspaces/luhmann-chat/resources/Niklas Luhmann - Macht-Lucius & Lucius (2003).pdf" "Niklas Luhmann Macht" nil)
+
+  (almacenar-archivo "/workspaces/luhmann-chat/resources/Niklas Luhmann - Organisation und Entscheidung.-Westdeutscher Verlag (2000).pdf"
+                     "Niklas Luhmann Organisation und Entscheidung"
+                     "/curso_doctorado")
 
   (def dir-loader (py/from-import langchain.document_loaders S3DirectoryLoader))
 
@@ -43,9 +58,15 @@
 
   doc
 
-  (aws/ops cliente-s3)
+  (aws/ops cliente-s3) 
 
-  (-> (aws/ops cliente-s3) keys)
+  (tap> (-> (aws/ops cliente-s3) keys))
+
+  (tap> (filter (fn [k] (re-seq #"Put\w+|Upload\w+" (str k))) (-> (aws/ops cliente-s3) keys)))
+  
+  (aws/doc cliente-s3 :PutObject)
+
+  (aws/doc cliente-s3 :Objects)
 
   (aws/invoke cliente-s3 {:op :GetObject :request {:Bucket "luhmann-bucket"
                                                    :Key "curso_doctorado/Luhmann, Niklas-The Control of Intransparency (1997).pdf"}})
@@ -53,6 +74,7 @@
   (aws/doc cliente-s3 :GetObject)
 
   (aws/invoke cliente-s3 {:op :ListBuckets})
+  
   (tap> (aws/invoke cliente-s3 {:op :ListObjects :request {:Bucket "luhmann-bucket"}}))
 
   (def obras (listar-obras))

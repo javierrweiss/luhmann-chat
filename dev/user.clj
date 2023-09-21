@@ -1,7 +1,7 @@
 (ns user
   (:require [portal.api :as p]))
 
-#_(def p (p/open {:launcher :vs-code}))
+(def p (p/open {:launcher :vs-code}))
 (add-tap #'p/submit)
  
 (comment
