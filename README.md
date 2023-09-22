@@ -80,6 +80,12 @@ Y en todo caso, si nuestro JDK es java 17, debemos crear un alias en nuestro dep
 ```
 Para importar paquetes primero hay que instalarlos con el gestor de paquetes que se esté usando, sea pip o conda. 
 
+## TODO
+
+1. Necesitamos idear una forma de validar las lecturas del OCR.
+2. Debemos revisar la función de carga de documentos para que sin importar que algun documento arroje excepción devuelva los demás.
+3. Realizar los embeddings con la API de Cohere.
+4. ¿Usar migratus para gestionar el SQL? (No es prioridad)
 
 ## Licencia
 
