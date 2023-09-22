@@ -2,13 +2,11 @@
   (:require [libpython-clj2.python :as py :refer [py. py.. py.-]] 
             [cognitect.aws.client.api :as aws]
             [javierweiss.configuracion.config :refer [configuracion]]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [com.brunobonacci.mulog :as u])
+  (:import java.io.IOException))
 
 (def config (configuracion))
-
-;; TODO
-;; 1. ¿Usar migratus para gestionar el SQL? (No es prioridad)
-;; 2. Realizar los embeddings con la API de cohere
 
 (py/initialize! :python-executable (str (System/getenv "CONDA_DIR") "/envs/luhmann/bin/python3.10") 
                 :library-path (str (System/getenv "CONDA_DIR") "/envs/lib/libpython3.10.so"))
@@ -21,28 +19,36 @@
 (defn listar-obras
   []
   (into []
-        (->> (aws/invoke cliente-s3 {:op :ListObjects 
-                                     :request {:Bucket (:bucket-name config)}})
-             :Contents
-             (map :Key)
-             rest)))
+        (try
+          (->> (aws/invoke cliente-s3 {:op :ListObjects 
+                                       :request {:Bucket (:bucket-name config)}})
+               :Contents
+               (map :Key)
+               rest)
+          (catch IOException e (u/log ::error-listado-obras :mensaje (.getMessage e))))))
 
 (defn cargar
   [doc]
-  (py. (s3-loader (:bucket-name config) doc) load))
+  (try
+    (py. (s3-loader (:bucket-name config) doc) load)
+    (catch Exception e (u/log ::error-carga-documentos :mensaje (.getMessage e)))))
 
 (defn crear-documentos
   []
-  (into []
-        (doseq [obra (listar-obras)] (cargar obra))))
+  (try
+    (into []
+          (doseq [obra (listar-obras)] (cargar obra)))
+    (catch Exception e (u/log ::error-creacion-documentos :mensaje (.getMessage e)))))
 
 (defn almacenar-archivo
   "Recibe String indicando la ruta, el nombre correponde a la llave con que se va a identificar en S3 y un string indicando la carpera 
    (/carpeta_X) -puede ser nil"
   [ruta nombre carpeta]
-  (aws/invoke cliente-s3 {:op :PutObject :request {:Bucket (str (:bucket-name config) carpeta) 
-                                                   :Key nombre
-                                                   :Body (io/input-stream ruta)}}))
+  (try 
+    (aws/invoke cliente-s3 {:op :PutObject :request {:Bucket (str (:bucket-name config) carpeta) 
+                                                        :Key nombre
+                                                        :Body (io/input-stream ruta)}})
+    (catch IOException e (u/log ::error-almacenamiento-s3 (.getMessage e)))))
 
 (comment
 
@@ -82,8 +88,8 @@
   (count obras)
 
   (tap> obras) 
-  
-  (cargar (obras 16))
+   
+  (cargar (obras 20))
 
   ;; El último texto, Trust and Power está dando problemas. Arroja excepción: FileNotFoundError: [Errno 2] No such file or directory: 'pdfinfo'
   ;; pdf2image.exceptions.PDFInfoNotInstalledError: Unable to get page count. Is poppler installed and in PATH? <= Ya se instaló

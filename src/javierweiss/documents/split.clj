@@ -59,5 +59,6 @@
 
   all
   
-  (def all-docs (split-all-docs))
+  (def all-docs (split-all-docs)) 
+  (tap> (count all-docs)) 
   )
