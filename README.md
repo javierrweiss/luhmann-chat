@@ -10,7 +10,7 @@ Esta aplicación cuenta con los siguientes componentes:
 
     - Una base de datos postgresql como base de datos de vectores empleando la extensión pgvector. Actualmente una instancia de AWS Aurora.
 
-    - Uso de la plataforma **Cohere** como proveedora de los servicios de LLM.
+    - Uso de la plataforma Cohere como proveedora de los servicios de LLM.
 
 ### Arquitectura de un RAG
 
