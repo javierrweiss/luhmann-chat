@@ -1,4 +1,4 @@
-# javierweiss/luhmann-chat
+# luhmann-chat
 
 *luhmann-chat* es una prueba de concepto de una aplicación que usa RAG (*Retrieval Augmented Generation*) para chatear con una base de conocimiento específica, a saber, la teoría de los sistemas del sociólogo alemán Niklas Luhmann.
 
