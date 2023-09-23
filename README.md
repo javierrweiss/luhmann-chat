@@ -27,7 +27,6 @@ Implementar un RAG requiere completar los siguientes 8 pasos básicos:
 
    ![](resources/RAG-flow.jpeg) <sup>[1](#nota)</sup>
 
-<a name="nota">1</>: Esta imagen fue tomada del curso de DeepLearning.AI titulado [*Langchain Chat with your Data*](https://learn.deeplearning.ai/langchain-chat-with-your-data).
 ## Uso
 
 En desarrollo...
@@ -89,6 +88,8 @@ Para importar paquetes primero hay que instalarlos con el gestor de paquetes que
 2. Debemos revisar la función de carga de documentos para que sin importar que algun documento arroje excepción devuelva los demás.
 3. Realizar los embeddings con la API de Cohere.
 4. ¿Usar migratus para gestionar el SQL? (No es prioridad)
+
+<a name="nota">1</a>: Esta imagen fue tomada del curso de DeepLearning.AI titulado [*Langchain Chat with your Data*](https://learn.deeplearning.ai/langchain-chat-with-your-data).
 
 ## Licencia
 
