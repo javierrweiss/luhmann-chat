@@ -89,8 +89,6 @@ Para importar paquetes primero hay que instalarlos con el gestor de paquetes que
 3. Realizar los embeddings con la API de Cohere.
 4. ¿Usar migratus para gestionar el SQL? (No es prioridad)
 
-<a name="nota">1</a>: Esta imagen fue tomada del curso de DeepLearning.AI titulado [*Langchain Chat with your Data*](https://learn.deeplearning.ai/langchain-chat-with-your-data).
-
 ## Licencia
 
 Este desarrollo se inscribe dentro del proyecto de investigación **Recursos computacionales para investigación en torno a la Teoría de Sistemas Sociales** financiado por la Universidad de Flores (UFLO).
@@ -103,3 +101,5 @@ _Feel free to remove or change the `LICENSE` file and remove or update this_
 _section of the `README.md` file!_
 
 Distributed under the Eclipse Public License version 1.0.
+
+<a name="nota">1</a>: Esta imagen fue tomada del curso de DeepLearning.AI titulado [*Langchain Chat with your Data*](https://learn.deeplearning.ai/langchain-chat-with-your-data).
