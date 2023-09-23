@@ -23,7 +23,9 @@ Implementar un RAG requiere completar los siguientes 8 pasos básicos:
 5. Almacenar esos *embeddings* en una base de datos de vectores.
 6. Tomar el input del usuario y crear un *embedding* del mismo. 
 7. Emplear algún algoritmo de similaridad para recuperar registros en la base de datos de vectores.
-8. Pasarle los resultados al modelo del LLM como contexto para producir una respuesta. 
+8. Pasarle los resultados al modelo del LLM como contexto para producir una respuesta.
+
+   ![](resources/RAG-flow.jpeg)
 
 ## Uso
 
