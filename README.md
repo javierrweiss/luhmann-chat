@@ -6,11 +6,11 @@
 
 Esta aplicación cuenta con los siguientes componentes:
 
-    - Un bucket S3 para almacenar los archivos que representan parte de la obra de Niklas Luhmann en distintos idiomas (inglés, español y alemán).
++ Un bucket S3 para almacenar los archivos que representan parte de la obra de Niklas Luhmann en distintos idiomas (inglés, español y alemán).
 
-    - Una base de datos postgresql como base de datos de vectores empleando la extensión pgvector. Actualmente una instancia de AWS Aurora.
++ Una base de datos postgresql como base de datos de vectores empleando la extensión pgvector. Actualmente una instancia de AWS Aurora.
 
-    - Uso de la plataforma Cohere como proveedora de los servicios de LLM.
++ Uso de la plataforma Cohere como proveedora de los servicios de LLM.
 
 ### Arquitectura de un RAG
 
@@ -82,12 +82,12 @@ Y en todo caso, si nuestro JDK es java 17, debemos crear un alias en nuestro dep
 ```
 Para importar paquetes primero hay que instalarlos con el gestor de paquetes que se esté usando, sea pip o conda. 
 
-## TODO
+## TAREAS PENDIENTES
+- [ ] Necesitamos idear una forma de validar las lecturas del OCR
+- [ ] Debemos revisar la función de carga de documentos para que sin importar que algun documento arroje excepción devuelva los demás
+- [ ] Realizar los embeddings con la API de Cohere
+- [ ] ¿Usar migratus para gestionar el SQL? (No es prioridad)
 
-1. Necesitamos idear una forma de validar las lecturas del OCR.
-2. Debemos revisar la función de carga de documentos para que sin importar que algun documento arroje excepción devuelva los demás.
-3. Realizar los embeddings con la API de Cohere.
-4. ¿Usar migratus para gestionar el SQL? (No es prioridad)
 
 ## Licencia
 
