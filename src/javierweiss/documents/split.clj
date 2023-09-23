@@ -56,9 +56,8 @@
   ;; Procesar todo
   
   (def all (mapv (fn [doc] (split token-splitter doc true)) (crear-documentos)))
-
-  all
-  
+  all 
   (def all-docs (split-all-docs)) 
   (tap> (count all-docs)) 
+  (first (ing/docs))
   )

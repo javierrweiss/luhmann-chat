@@ -30,15 +30,15 @@
 (defn cargar
   [doc]
   (try
+    (u/log ::carga-documentos :status (str "Cargando " doc "..."))
     (py. (s3-loader (:bucket-name config) doc) load)
     (catch Exception e (u/log ::error-carga-documentos :mensaje (.getMessage e)))))
 
 (defn crear-documentos
   []
-  (try
-    (into []
-          (doseq [obra (listar-obras)] (cargar obra)))
-    (catch Exception e (u/log ::error-creacion-documentos :mensaje (.getMessage e)))))
+  (when-let [obras (listar-obras)]
+    (keep identity
+          (for [obra obras] (cargar obra)))))
 
 (defn almacenar-archivo
   "Recibe String indicando la ruta, el nombre correponde a la llave con que se va a identificar en S3 y un string indicando la carpera 
@@ -96,8 +96,13 @@
   
   (doseq [obra obras] (println (cargar obra)))
 
-
-  (crear-documentos)
+  (def docs (crear-documentos))
+  docs 
+  (count docs)
+  (ffirst docs)
+ (require '[javierweiss.utils.utils :refer [py-obj->clj-map]])
+   
+  (py.- (py/get-item (first docs) 0) page_content)
 
   (def doc (py. (s3-loader "luhmann-bucket" "curso_doctorado/Luhmann limits of steering.pdf") load))
 
