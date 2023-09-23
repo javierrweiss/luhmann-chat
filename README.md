@@ -25,8 +25,9 @@ Implementar un RAG requiere completar los siguientes 8 pasos básicos:
 7. Emplear algún algoritmo de similaridad para recuperar registros en la base de datos de vectores.
 8. Pasarle los resultados al modelo del LLM como contexto para producir una respuesta.
 
-   ![](resources/RAG-flow.jpeg)
+   ![](resources/RAG-flow.jpeg) <sup>[1](#nota)</sup>
 
+<a name="nota">1</>: Esta imagen fue tomada del curso de DeepLearning.AI titulado [*Langchain Chat with your Data*](https://learn.deeplearning.ai/langchain-chat-with-your-data).
 ## Uso
 
 En desarrollo...
