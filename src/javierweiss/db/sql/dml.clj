@@ -1,4 +1,4 @@
-(ns javierweiss.sql.dml
+(ns javierweiss.db.sql.dml
   (:require [javierweiss.sql.conexion :refer [ejecuta-sentencia]]
             [honey.sql :as sql]
             [com.brunobonacci.mulog :as u])

@@ -6,5 +6,5 @@
   (read-config (io/resource "config.edn")))
  
 (comment
-  (configuracion)
-  )
+  (tap> (configuracion)) 
+  ) 

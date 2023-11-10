@@ -1,12 +1,12 @@
-(ns javierweiss.sql.consultas
-  (:require [javierweiss.sql.conexion :refer [ejecuta-sentencia]]
+(ns javierweiss.db.sql.consultas
+  (:require [javierweiss.db.sql.conexion :refer [ejecuta-sentencia]]
             [honey.sql :as sql]
             [com.brunobonacci.mulog :as u]
             [sweet-array.core :as sa])
   (:import java.sql.SQLException))
 
 (defn buscar_similitudes
-  [embeddings_consulta]
+  [opts embeddings_consulta]
   (let [emb (if (sa/instance? [double] embeddings_consulta)
               embeddings_consulta
               (sa/new [double] embeddings_consulta))
@@ -15,7 +15,7 @@
                               :order-by [:embedding "<=>" emb]
                               :limit 3})]
     (try
-      (ejecuta-sentencia consulta)
+      (ejecuta-sentencia consulta opts)
       (catch SQLException e (u/log ::excepcion-busqueda-embeds :mensaje (.getMessage e))))))
 
 

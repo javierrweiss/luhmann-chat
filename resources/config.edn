@@ -1,7 +1,23 @@
-{:db-name #env AWSDBNAME
- :dbtype "postgres"
- :user #env AWSUSER
- :password #env AWSPASS
- :host #env AWSHOST 
- :cohere-key #env COHEREKEY
- :bucket-name "luhmann-bucket"}
+{:secrets #include #join [#env HOME "/.secrets.edn"]
+ :db  {:aws {:db-name #env AWSDBNAME
+             :dbtype "postgres"
+             :user #env AWSUSER
+             :password #env AWSPASS
+             :host #env AWSHOST}
+       :azure {}
+       :google-cloud {}
+       :railway {:db-name "railway"
+                 :dbtype "postgres"
+                 :user #ref [:secrets :railway-user]
+                 :password #ref [:secrets :railway-pass]
+                 :host #ref [:secrets :railway-host]
+                 :jdbc-url #ref [:secrets :railway-url]
+                 :port 33180 }}
+ :vector-db {}
+ :storage-service {:aws {:bucket-name #env BUCKET-NAME}
+                   :azure {}
+                   :google-cloud {}}
+ :llm-service  {:cohere {:cohere-key #env COHEREKEY}
+                :openai {:openai-key #env OPENAI-KEY}
+                :anthropic {:anthropic-key #env ANTHROPIC-KEY}
+                :custom-model {}}}
