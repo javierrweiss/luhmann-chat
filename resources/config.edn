@@ -4,7 +4,9 @@
              :user #env AWSUSER
              :password #env AWSPASS
              :host #env AWSHOST}
-       :azure {}
+       :azure {:jdbc-url #ref [:secrets :azure-jdbc-url]
+               :user #ref [:secrets :azure-user]
+               :password #ref [:secrets :azure-pass]}
        :google-cloud {}
        :railway {:db-name "railway"
                  :dbtype "postgres"

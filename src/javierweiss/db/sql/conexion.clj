@@ -5,7 +5,7 @@
   (:import com.zaxxer.hikari.HikariDataSource
            java.sql.SQLException))
  
-(def conf (-> (configuracion) :db :railway))
+(def conf (-> (configuracion) :db :azure))
 
 (def full-options {:dbtype (:dbtype conf)
                    :db-name (:db-name conf)
@@ -13,9 +13,11 @@
                    :password (:password conf)
                    :host (:host conf)
                    :port (or (:port conf) 5432)})
-   
-(def conn-url {:jdbcUrl (:jdbc-url conf)})
-
+     
+(def conn-url {:jdbcUrl (:jdbc-url conf)
+               :username (:user conf)
+               :password (:password conf)}) 
+ 
 (defn ejecuta-sentencia
   [sentence opts]
   (with-open [^HikariDataSource d (connection/->pool com.zaxxer.hikari.HikariDataSource opts)]
@@ -27,15 +29,25 @@
     (ejecuta-sentencia ["CREATE EXTENSION IF NOT EXISTS vector"] opts)
     (catch SQLException e (.getMessage e))))
 
-(comment 
-   
+(comment
+
   (ejecuta-sentencia ["SELECT 1"] conn-url)
   (ejecuta-sentencia ["SELECT 1"] full-options)
   (tap> (ejecuta-sentencia ["SELECT pg_available_extensions()"] full-options))
-   (activar-extension full-options)
-  (ejecuta-sentencia ["SELECT * FROM pg_extension"] full-options)
- 
+  (tap> (ejecuta-sentencia ["SELECT pg_available_extensions()"] conn-url))
+  (activar-extension full-options)
+  (activar-extension conn-url) 
+  (ejecuta-sentencia ["show azure.extensions"] conn-url)
+  (ejecuta-sentencia ["SELECT * FROM pg_extension"] full-options) 
+  (connection/->pool com.zaxxer.hikari.HikariDataSource conn-url) 
   (defonce ds (jdbc/get-datasource {:jdbcUrl (:jdbc-url conf)}))
- (connection/->pool com.zaxxer.hikari.HikariDataSource {:jdbcUrl (:jdbc-url conf)})
-  (jdbc/execute! ds ["SELECT 1"])
-  ) 
+  (connection/->pool com.zaxxer.hikari.HikariDataSource {:jdbcUrl (:jdbc-url conf)}) 
+  (ejecuta-sentencia ["SELECT NOW()"] conn-url)
+
+  (ejecuta-sentencia ["SELECT * 
+                         FROM information_schema.tables
+                         WHERE table_schema = 'public' AND table_type='BASE TABLE'"] conn-url)
+  (ejecuta-sentencia ["SELECT *
+                         FROM archivo_luhmann"] conn-url)
+  
+  )  
