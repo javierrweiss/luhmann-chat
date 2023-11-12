@@ -87,6 +87,8 @@ Para importar paquetes primero hay que instalarlos con el gestor de paquetes que
 - [ X ] Debemos revisar la función de carga de documentos para que sin importar que algun documento arroje excepción devuelva los demás
 - [ ] Realizar los embeddings con la API de Cohere
 - [ ] ¿Usar migratus para gestionar el SQL? (No es prioridad)
+- [ ] Actualizar la documentación 
+- [ ] Crear interfaces para las distintas fases del proceso de recuperación 
 
 
 ## Licencia
