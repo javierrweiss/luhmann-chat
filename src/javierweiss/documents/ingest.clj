@@ -8,9 +8,6 @@
 
 (def config (configuracion))
 
-(py/initialize! :python-executable (str (System/getenv "CONDA_DIR") "/envs/luhmann/bin/python3.10") 
-                :library-path (str (System/getenv "CONDA_DIR") "/envs/lib/libpython3.10.so"))
-
 (def s3-loader (py/from-import langchain.document_loaders S3FileLoader))
 
 (def cliente-s3 (aws/client {:api :s3
