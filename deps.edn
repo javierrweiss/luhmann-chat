@@ -1,6 +1,6 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure                            {:mvn/version "1.11.1"}
-        clj-python/libpython-clj                       {:mvn/version "2.024"}
+        clj-python/libpython-clj                       {:mvn/version "2.025"}
         aero/aero                                      {:mvn/version "1.1.6"}
         danielsz/cohere-clojure                        {:git/url "https://github.com/danielsz/cohere-clojure" 
                                                         :git/sha "57d34bea0e36f091f499ca27e8daeee2180c0ed1"}
