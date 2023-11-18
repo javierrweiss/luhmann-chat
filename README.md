@@ -6,11 +6,11 @@
 
 Esta aplicación cuenta con los siguientes componentes:
 
-+ Un bucket S3 para almacenar los archivos que representan parte de la obra de Niklas Luhmann en distintos idiomas (inglés, español y alemán).
++ Un servicio de almacenamiento (S3, Azure Blob Storage, etc.) para almacenar los archivos que representan parte de la obra de Niklas Luhmann en distintos idiomas (inglés, español y alemán).
 
-+ Una base de datos postgresql como base de datos de vectores empleando la extensión pgvector. Actualmente una instancia de AWS Aurora.
++ Una base de datos de vectores ó postgresql empleando la extensión pgvector. 
 
-+ Uso de la plataforma Cohere como proveedora de los servicios de LLM.
++ Una plataforma proveedora de los servicios de LLM o modelos opensource.
 
 ### Arquitectura de un RAG
 
@@ -33,62 +33,14 @@ En desarrollo...
 
 ## Desarrollo
 
-Este proyecto usa libpython-clj. Para usar libpython-clj hay que tener en cuenta qué entorno de Python está instalado en nuestro computador.
-Si no tenemos ni Conda, ni pyenv, sencillamente podemos hacer lo siguiente:
+Este proyecto cuenta con un archivo devcontainer.json donde se definen las principales dependencias que el proyecto necesita para ejecutarse. 
 
-```clojure 
-  (ns xxx.xxx
-  (:require [libpython-clj2.require :refer [require-python]]
-            [libpython-clj2.python :refer [py. py.. py.-] :as py]))
- ```
- Si, en cambio tenemos Conda, debemos hacerlo así si no tenemos un entorno virtual activado:
-
- ```clojure
- (ns xxx.xxx
-  (:require [libpython-clj2.python :as py :refer [py. py.. py.-]]))
-
-  (py/initialize! :python-executable (str (System/getenv "CONDA_DIR") "/bin/python3.10") 
-                  :library-path (str (System/getenv "CONDA_DIR") "/lib/libpython3.10.so"))
- ```
-  O así, si tenemos un entorno virtual activado:
-```clojure 
-  (ns xxx.xxx
-  (:require [libpython-clj2.python :as py]))
-  
-  (py/initialize! :python-executable "/opt/anaconda3/envs/my_env/bin/python3.7"
-                :library-path "/opt/anaconda3/envs/my_env/lib/libpython3.7m.so")
-```
-Siempre es mejor tener un entorno virtual. Con Conda hacer lo siguiente:
-
- ```bash
- conda create -n <nombre-del-entorno>
- ```
- 
- ```bash
- conda init bash
- ```
-
- ```bash
- conda activate <nombre-del-entorno>
- ```
-
-Y si tenemos pyenv, debemos seguir estas instrucciones: https://clj-python.github.io/libpython-clj/environments.html
-
-Y en todo caso, si nuestro JDK es java 17, debemos crear un alias en nuestro deps.edn con lo siguiente:
-
-```edn 
-:jvm-opts ["--add-modules" "jdk.incubator.foreign"
-           "--enable-native-access=ALL-UNNAMED"]
-```
-Para importar paquetes primero hay que instalarlos con el gestor de paquetes que se esté usando, sea pip o conda. 
+Basta sólo activar el entorno *luhmann* cuando se comience a trabajar.
 
 ## TAREAS PENDIENTES
 - [ ] Necesitamos idear una forma de validar las lecturas del OCR
-- [ X ] Debemos revisar la función de carga de documentos para que sin importar que algun documento arroje excepción devuelva los demás
-- [ ] Realizar los embeddings con la API de Cohere
-- [ ] ¿Usar migratus para gestionar el SQL? (No es prioridad)
-- [ ] Actualizar la documentación 
-- [ ] Crear interfaces para las distintas fases del proceso de recuperación 
+- [ ] Realizar los embeddings 
+- [ X ] Crear interfaces y módulos para las distintas fases del proceso de recuperación 
 
 
 ## Licencia

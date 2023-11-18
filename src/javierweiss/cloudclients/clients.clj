@@ -1,4 +1,4 @@
-(ns javierweiss.cloud-clients.clients
+(ns javierweiss.cloudclients.clients
   (:require [cognitect.aws.client.api :as aws])
   (:import (com.azure.storage.blob
             BlobClientBuilder BlobServiceClientBuilder)))
@@ -6,13 +6,16 @@
 (def cliente-aws-s3 (aws/client {:api :s3
                                  :region :us-east-1}))
 
-(def cliente-azure-blob (-> (BlobClientBuilder.)
+#_(def cliente-azure-blob (-> (BlobClientBuilder.)
                           (.endpoint "")
                           (.blobName "luhmannblob") 
                           (.containerName "archivosociologico")
                           (.sasToken "")
                           (.buildClient)))
 
+(def providers [::aws ::azure])
+
+(map #(derive % ::cloud-provider) providers)
 
 (comment 
   (def service (-> (BlobServiceClientBuilder.)
