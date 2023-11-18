@@ -8,11 +8,6 @@
 
 (def config (configuracion))
 
-(def s3-loader (py/from-import langchain.document_loaders S3FileLoader))
-
-(def cliente-s3 (aws/client {:api :s3
-                             :region :us-east-1}))
-
 (defn listar-obras
   []
   (into []
