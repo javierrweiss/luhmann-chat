@@ -3,35 +3,49 @@
             [javierweiss.db.sql.consultas :refer [buscar_similitudes]]
             [javierweiss.db.sql.ddl :refer [crear-tabla-archivo-luhmann]]
             [javierweiss.db.sql.dml :refer [crear-registro]]
+            [javierweiss.configuracion.config :refer [configuracion]]
             [com.brunobonacci.mulog :as u]))
 
-(defn buscar 
-  "Recibe como parámetro una llave indicando el tipo de implementación.
-   Devuelve función de búsqueda de similitud que recibe como argumento un embedding.
-   Debe coincidir con el tipo de base de vectores empleada"
-  [implementacion]
-  (condp = implementacion
-    :postgres (partial buscar_similitudes conn-url)
-    (u/log ::implementacion-vector-search-no-soportada :msg "La implementación seleccionada no tiene soporte o no existe")))
+(def dbs (->> (configuracion) :db keys (apply hash-set)))
 
-(defn crea-tabla-principal
-  [vector-size]
+(defmulti buscar (fn [db _] (dbs db)))
+
+(defmethod buscar :aws
+ [_ embeddings]
+ (buscar_similitudes full-options embeddings))
+
+(defmethod buscar :azure
+  [_ embeddings]
+  (buscar_similitudes conn-url embeddings))
+
+(defmulti crea-tabla-principal (fn [db _] (dbs db)))
+
+(defmethod crea-tabla-principal :aws
+ [_ vector-size]
+ (crear-tabla-archivo-luhmann full-options vector-size))
+
+(defmethod crea-tabla-principal :azure
+  [_ vector-size]
   (crear-tabla-archivo-luhmann conn-url vector-size))
-  
-(defn inserta-registros
-  "Recibe como parámetro una llave indicando el tipo de implementación de base de datos de vectores.
-   Devuelve una función para insertar registros en la misma."
-  [implementacion]
-  (condp = implementacion 
-    :postgres (partial crear-registro conn-url)
-    (u/log ::implementacion-vector-db-no-soportada :msg "La implementación seleccionada no tiene soporte o no existe")))
 
+(defmulti inserta-registros (fn [db _] (dbs db)))
 
- 
+(defmethod inserta-registros :aws
+ [_ valores]
+ (crear-registro full-options valores))
+
+(defmethod inserta-registros :azure
+  [_ valores]
+  (crear-registro conn-url valores))
+
+   
 (comment
   
   (buscar :postgres) 
+  (dbs :aws)
+  (dbs :weaviate)
   (crea-tabla-principal 768)
+  (ns-unmap *ns* 'b)
   )
 
 

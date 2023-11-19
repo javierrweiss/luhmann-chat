@@ -16,8 +16,8 @@
      
 (def conn-url {:jdbcUrl (:jdbc-url conf)
                :username (:user conf)
-               :password (:password conf)}) 
- 
+               :password (:password conf)})  
+   
 (defn ejecuta-sentencia
   [sentence opts]
   (with-open [^HikariDataSource d (connection/->pool com.zaxxer.hikari.HikariDataSource opts)]
@@ -41,8 +41,8 @@
   (ejecuta-sentencia ["SELECT * FROM pg_extension"] full-options) 
   (connection/->pool com.zaxxer.hikari.HikariDataSource conn-url) 
   (defonce ds (jdbc/get-datasource {:jdbcUrl (:jdbc-url conf)}))
-  (connection/->pool com.zaxxer.hikari.HikariDataSource {:jdbcUrl (:jdbc-url conf)}) 
-  (ejecuta-sentencia ["SELECT NOW()"] conn-url)
+  (jdbc/execute! ds ["SELECT NOW()"])  
+  (ejecuta-sentencia ["SELECT NOW()"] conn-url) 
 
   (ejecuta-sentencia ["SELECT * 
                          FROM information_schema.tables
