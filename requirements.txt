@@ -2,5 +2,10 @@ langchain==0.0.336
 llama-index==0.9.3.post1
 opencv-contrib-python==4.8.1.78
 unstructured==0.10.30
+unstructured.pytesseract==0.3.12
+unstructured-inference==0.7.11
 pypdf==3.17.1
 pdf2image==1.16.3
+pdfminer-six==20221105
+azure-core==1.29.5
+azure-storage-blob==12.19.0

@@ -1,15 +1,15 @@
 (ns javierweiss.cloudclients.listados
   (:require [cognitect.aws.client.api :as aws]
-            [javierweiss.cloudclients.clients :as c]
+            [javierweiss.cloudclients.clients :as c :refer [providers]]
             [javierweiss.configuracion.config :refer [configuracion]]
             [com.brunobonacci.mulog :as u])
   (:import java.io.IOException))
 
 (def config (configuracion))
 
-(defmulti listar-obras (fn [p] ((descendants :javierweiss.cloudclients.clients/cloud-provider) p)))
+(defmulti listar-obras (fn [p] (providers p)))
  
-(defmethod listar-obras :javierweiss.cloudclients.clients/aws [_]
+(defmethod listar-obras :aws [_]
   (into []
         (try
           (->> (aws/invoke c/cliente-aws-s3 {:op :ListObjects
@@ -19,13 +19,15 @@
                rest)
           (catch IOException e (u/log ::error-listado-obras :mensaje (.getMessage e))))))
 
-(defmethod listar-obras :javierweiss.cloudclients.clients/azure
- []
-  )
-
+(defmethod listar-obras :azure
+  [_]
+  (into [] (for [item (.listBlobs c/cliente-azure-container-blob)] (.getName item))))
+ 
 (comment
-  (listar-obras :javierweiss.cloudclients.clients/aws) 
+  (listar-obras :azure)
+  (listar-obras )
   (ns-interns *ns*)
   (ns-unmap *ns* 'listar-obras)
+  (remove-all-methods listar-obras)
 
   )
