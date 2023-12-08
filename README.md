@@ -33,9 +33,21 @@ En desarrollo...
 
 ## Desarrollo
 
+### En Codespaces
+
 Este proyecto cuenta con un archivo devcontainer.json donde se definen las principales dependencias que el proyecto necesita para ejecutarse. 
 
-Basta sólo activar el entorno *luhmann* cuando se comience a trabajar.
+Basta sólo activar el entorno *luhmann* cuando se comience a trabajar y conectarse al REPL.
+
+### En Gitpod
+
+Ejecutar el script *create_env.sh* para crear el entorno virtual. Luego, opcionalmente, activar el entorno: 
+
+```bash
+conda activate luhmann
+```
+
+Y finalmente conectarse al REPL.
 
 ## TAREAS PENDIENTES
 - [ ] Necesitamos idear una forma de validar las lecturas del OCR
