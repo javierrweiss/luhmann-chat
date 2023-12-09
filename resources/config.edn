@@ -5,7 +5,8 @@
              :host #env AWSHOST}
        :azure {:jdbc-url #env AZURE_JDBC
                :user #env PG_USER
-               :password #env PGPASSWORD}
+               :password #env PGPASSWORD
+               :dbtype "postgres"}
        :google-cloud {}} 
  :storage-service {:aws {:bucket-name #env BUCKET-NAME}
                    :azure {:blobname "luhmannblob"

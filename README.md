@@ -41,7 +41,7 @@ Basta sólo activar el entorno *luhmann* cuando se comience a trabajar y conecta
 
 ### En Gitpod
 
-Ejecutar el script *create_env.sh* para crear el entorno virtual. Luego, opcionalmente, activar el entorno: 
+Ejecutar el script *create_env.sh* para crear el entorno virtual. Luego activar el entorno (asegúrese de crear una nueva terminal): 
 
 ```bash
 conda activate luhmann

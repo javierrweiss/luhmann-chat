@@ -14,7 +14,7 @@
                    :host (:host conf)
                    :port (or (:port conf) 5432)})
      
-(def conn-url {:jdbcUrl (:jdbc-url conf)
+(def conn-url {:jdbcUrl  (:jdbc-url conf) 
                :username (:user conf)
                :password (:password conf)})  
    
@@ -30,7 +30,7 @@
     (catch SQLException e (.getMessage e))))
 
 (comment
-
+ 
   (ejecuta-sentencia ["SELECT 1"] conn-url)
   (ejecuta-sentencia ["SELECT 1"] full-options)
   (tap> (ejecuta-sentencia ["SELECT pg_available_extensions()"] full-options))
