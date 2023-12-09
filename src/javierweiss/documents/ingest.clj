@@ -16,13 +16,15 @@
   [coleccion-documentos]
   (->> coleccion-documentos
        (map #(split sp/langchain-split-documents sp/token-splitter %))
-       (map #(map (fn [document] (py/get-attr document :page_content)) %))))
+       (map #(map (fn [document] (py/get-attr document :page_content)) %))
+       (apply concat)
+       vec))
 
 (defn crear-embeddings
   [servicio documentos-divididos]
-  (embed/embed-chunk servicio {:texts [documentos-divididos] 
+  (embed/embed-chunk servicio {:texts documentos-divididos
                                :truncate "END"}))
-
+ 
 
 (comment
   
@@ -50,7 +52,7 @@
   (client/embed :texts [chunkk])
 
   (System/getProperty "cohere.api.key")
-
-  (->> (dividir-documentos res)
-       (crear-embeddings :cohere))
+ 
+  (->>      (dividir-documentos res)  
+           (crear-embeddings :cohere))
   ) 
