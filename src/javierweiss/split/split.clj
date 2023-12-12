@@ -1,6 +1,5 @@
 (ns javierweiss.split.split
-  (:require [libpython-clj2.python :as py :refer [py. py.. py.-]]
-            [javierweiss.documents.ingest :as ing :refer [crear-documentos]]
+  (:require [libpython-clj2.python :as py :refer [py. py.. py.-]] 
             [javierweiss.utils.utils :as ut])) 
 
 (defn split

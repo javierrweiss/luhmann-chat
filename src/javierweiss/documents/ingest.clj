@@ -34,7 +34,9 @@
            '[javierweiss.embed.embed :as embed])
 
   (def res (crear-documentos (take 2 (listar-obras :azure)) (partial load-document :langchain-azure-singleblob)))
-  res
+  (type res) 
+  (def res-map (py/as-map res)) 
+  res-map 
   (def splitting (split sp/langchain-split-documents sp/token-splitter (first res)))
   (count splitting)
   (type splitting)
