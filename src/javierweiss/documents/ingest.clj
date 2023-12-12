@@ -27,32 +27,35 @@
  
 
 (comment
-  
+
   (require '[javierweiss.cloudclients.listados :refer [listar-obras]]
            '[javierweiss.load.load :refer [load-document]]
            '[libpython-clj2.python :as py :refer [py. py.. py.-]]
            '[javierweiss.embed.embed :as embed])
 
   (def res (crear-documentos (take 2 (listar-obras :azure)) (partial load-document :langchain-azure-singleblob)))
-   res 
-  (def splitting (split sp/langchain-split-documents sp/token-splitter (first res))) 
+  res
+  (def splitting (split sp/langchain-split-documents sp/token-splitter (first res)))
   (count splitting)
   (type splitting)
   splitting
-  (count (map #(py/get-attr % :page_content) splitting)) 
-  (def chunkk (py.- (py/get-item splitting 0) page_content)) 
-   
-  (py/->py-list [chunkk]) 
+  (count (map #(py/get-attr % :page_content) splitting))
+  (def chunkk (py.- (py/get-item splitting 0) page_content))
+
+  (py/->py-list [chunkk])
   (embed/embed-chunk :cohere {:texts [["Hola"]] :model "embed-multilingual-v3.0" :truncate "END"}) ;; Arroja error 400
   (embed/embed-chunk :cohere {:texts [chunkk] :model "embed-multilingual-v3.0" :truncate "END"}) ;; Arroja error 400
- (embed/embed-chunk :cohere {:texts [chunkk]  :truncate "END"})
-  
+  (embed/embed-chunk :cohere {:texts [chunkk]  :truncate "END"})
+
   (require '[cohere.client :as client])
   (client/generate :prompt "Hey, there! What is your name?")
   (client/embed :texts [chunkk])
 
   (System/getProperty "cohere.api.key")
- 
-  (->>      (dividir-documentos res)  
-           (crear-embeddings :cohere))
+
+  (->> (dividir-documentos res)
+       (crear-embeddings :cohere))
+  
+  (->> (into [] (take 5 (dividir-documentos res))) 
+       (crear-embeddings :cohere)) 
   ) 
