@@ -22,8 +22,7 @@
 
 (defn crear-embeddings
   [servicio documentos-divididos]
-  (embed/embed-chunk servicio {:texts documentos-divididos
-                               :truncate "END"}))
+  (embed/embed-chunk servicio documentos-divididos))
  
 
 (comment
@@ -60,6 +59,8 @@
 ;; https://docs.cohere.com/reference/embed
   ;; No olvidar que el máximo de textos por llamado es 96.
   (py/->py-list [chunkk])
+  (count chunkk)
+  (first chunkk)
   (embed/embed-chunk :cohere {:texts [["Hola"]] :model "embed-multilingual-v3.0" :truncate "END"}) ;; Arroja error 400
   (embed/embed-chunk :cohere {:texts [chunkk] :model "embed-multilingual-v3.0" :truncate "END"}) ;; Arroja error 400. ¿Será por el número de tokens?
   (embed/embed-chunk :cohere {:texts [chunkk] :model "embed-multilingual-v2.0" :truncate "END"})
@@ -70,13 +71,20 @@
   (client/embed :texts [chunkk])
 
   (System/getProperty "cohere.api.key")
-  
+
   ;; Hay que hacer una partición de la colección en piezas de 96 items c/u
-  (partition 96 splitting)
+  (def part (partition 96 splitting))
+  (count part)
+  (count (second part))
 
-  (->> (dividir-documentos res)
-       (crear-embeddings :cohere))
+  (def resultado (->> (dividir-documentos res)
+                      (crear-embeddings :cohere))) 
+  
+  (tap> resultado)
 
-  (->> (into [] (take 5 (dividir-documentos res)))
-       (crear-embeddings :cohere))
+(crear-embeddings :cohere [])
+
+(def divs (dividir-documentos res))
+divs
+(count divs)  
   ) 
