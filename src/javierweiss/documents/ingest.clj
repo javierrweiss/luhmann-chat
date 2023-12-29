@@ -3,7 +3,8 @@
             [javierweiss.split.splitters.langchainsplitter :as sp]
             [libpython-clj2.python :as py]
             [javierweiss.split.split :refer [split]]
-            [javierweiss.embed.embed :as embed]))
+            [javierweiss.embed.embed :as embed]
+            [javierweiss.db.db :as db]))
 
 (defn crear-documentos
   [list-or-listfn load-fn]
@@ -23,7 +24,25 @@
 (defn crear-embeddings
   [servicio documentos-divididos]
   (embed/embed-chunk servicio documentos-divididos))
+
+(defn- contar-tokens 
+  [])
+
+(defn- extraer-referencia 
+  [])
+
+(defn- textos-embeddings
+  [{:keys [texts embeddings]}]
+  (map #(vector %1 %2) texts embeddings))
  
+(defn guardar-embeddings
+  [servicio referencia pagina tokens service-response]
+  (let [data (if (seq? service-response) 
+               (mapv #(select-keys % [:texts :embeddings]) service-response)
+               (vector (select-keys service-response [:texts :embeddings])))
+        tuplas-texto-embeddings (mapv #(textos-embeddings %) data) ;;Tanto si es un mapa como si es una secuencia de mapas, cada llave tiene una colección de elementos (textos y embeddings) que quiero extraer 
+        registros (into [] (for [tupla tuplas-texto-embeddings] [referencia pagina (first tupla) tokens (second tupla)]))]
+    (db/inserta-registros servicio registros)))
 
 (comment
 
@@ -79,12 +98,20 @@
 
   (def resultado (->> (dividir-documentos res)
                       (crear-embeddings :cohere))) 
-  
-  (tap> resultado)
+  (type (first resultado))
+  (tap> (first resultado))
 
 (crear-embeddings :cohere [])
 
 (def divs (dividir-documentos res))
 divs
 (count divs)  
+  
+  (let [m {:a 1 :b 2 :c [1 4]}]
+    #_(select-keys m [:a :c])
+    (seq m))
+
+
+  (seq? (map inc (range 30)))
+
   ) 
