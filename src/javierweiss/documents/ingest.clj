@@ -4,7 +4,8 @@
             [libpython-clj2.python :as py]
             [javierweiss.split.split :refer [split]]
             [javierweiss.embed.embed :as embed]
-            [javierweiss.db.db :as db]))
+            [javierweiss.db.db :as db]
+            [javierweiss.utils.utils :as ut]))
 
 (defn crear-documentos
   [list-or-listfn load-fn]
@@ -25,9 +26,6 @@
   [servicio documentos-divididos]
   (embed/embed-chunk servicio documentos-divididos))
 
-(defn- contar-tokens 
-  [])
-
 (defn- extraer-referencia 
   [])
 
@@ -36,12 +34,14 @@
   (map #(vector %1 %2) texts embeddings))
  
 (defn guardar-embeddings
-  [servicio referencia pagina tokens service-response]
+  [servicio referencia pagina service-response]
   (let [data (if (seq? service-response) 
                (mapv #(select-keys % [:texts :embeddings]) service-response)
                (vector (select-keys service-response [:texts :embeddings])))
         tuplas-texto-embeddings (mapv #(textos-embeddings %) data) ;;Tanto si es un mapa como si es una secuencia de mapas, cada llave tiene una colección de elementos (textos y embeddings) que quiero extraer 
-        registros (into [] (for [tupla tuplas-texto-embeddings] [referencia pagina (first tupla) tokens (second tupla)]))]
+        registros (into [] (for [tupla tuplas-texto-embeddings :let [txt (first tupla)
+                                                                     emb (second tupla)]] 
+                             [referencia pagina txt (count txt) emb]))]
     (db/inserta-registros servicio registros)))
 
 (comment
@@ -53,7 +53,9 @@
 
   ;; Load document devuelve un objeto de tipo lista por cada documento
   (def res (crear-documentos (take 2 (listar-obras :azure)) (partial load-document :langchain-azure-singleblob)))
-  (count res)
+  (keys (ut/py-obj->clj-map (ffirst res)))
+  (:metadata (ut/py-obj->clj-map (ffirst res)))
+  (:type (ut/py-obj->clj-map (ffirst res)))
   (py/get-attr (ffirst res) "page_content")
   (count (ffirst res))
   (def contenidos (map (fn [pyobj]
@@ -69,6 +71,10 @@
   (def extension-splits (map (fn [doc] (let [pagina (py/get-attr doc :page_content)]
                                          (count pagina)))
                              splitting))
+  (py. sp/token-splitter count_tokens (py/get-attr (first splitting) :page_content))
+  (py.. (sp/token-splitter :chunk_size 750 :chunk_overlap 10) (count_tokens (first splitting)))
+  (py. (first splitting) tokens)
+
   extension-splits
   (type splitting)
   splitting

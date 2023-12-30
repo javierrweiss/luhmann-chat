@@ -12,3 +12,7 @@
 (defn langchain-create-documents
   [splitter doc single-doc? & {:keys [size overlap] :or {size 750 overlap 10}}]
   (py. (splitter :chunk_size size :chunk_overlap overlap) create_documents doc))
+
+(comment 
+  
+  )
