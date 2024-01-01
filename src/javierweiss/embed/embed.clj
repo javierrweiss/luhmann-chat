@@ -13,12 +13,14 @@
       (and (> len 0) (<= len 96)) (do
                                     (u/log ::generando-embeddings :cantidad-documentos len)
                                     (cohere/cohere-embedding {:texts documents
+                                                              :model "embed-multilingual-v2.0"
                                                               :truncate "END"}))
       (> len 96) (let [docs (partition 96 documents)]
                    (u/log ::generando-embeddings-en-paralelo :cantidad-documentos len)
                    (doall
                     (pmap
                      #(cohere/cohere-embedding {:texts %
+                                                :model "embed-multilingual-v2.0"
                                                 :truncate "END"})
                      docs)))
       :else (throw (IllegalArgumentException. "El objeto documento no puede estar vacío"))))) ;; En verdad quiero lanzar una excepción??

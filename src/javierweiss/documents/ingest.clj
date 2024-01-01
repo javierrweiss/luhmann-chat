@@ -24,7 +24,16 @@
 
 (defn crear-embeddings
   [servicio documentos-divididos]
-  (embed/embed-chunk servicio documentos-divididos))
+  (let [fuentes (map (fn [document]
+                       (-> (ut/py-obj->clj-map document)
+                           :metadata
+                           :source))
+                     documentos-divididos)
+        embeddings (embed/embed-chunk servicio documentos-divididos)
+        agregar-fuentes (fn [m] (assoc m :fuentes fuentes))] 
+    (if (map? embeddings)
+      (agregar-fuentes embeddings)
+      (map #(agregar-fuentes %) embeddings))))
 
 (defn- extraer-referencia 
   [])
@@ -34,14 +43,14 @@
   (map #(vector %1 %2) texts embeddings))
  
 (defn guardar-embeddings
-  [servicio referencia pagina service-response]
+  [servicio referencia service-response]
   (let [data (if (seq? service-response) 
                (mapv #(select-keys % [:texts :embeddings]) service-response)
                (vector (select-keys service-response [:texts :embeddings])))
         tuplas-texto-embeddings (mapv #(textos-embeddings %) data) ;;Tanto si es un mapa como si es una secuencia de mapas, cada llave tiene una colección de elementos (textos y embeddings) que quiero extraer 
         registros (into [] (for [tupla tuplas-texto-embeddings :let [txt (first tupla)
                                                                      emb (second tupla)]] 
-                             [referencia pagina txt (count txt) emb]))]
+                             [referencia nil txt (count txt) emb]))]
     (db/inserta-registros servicio registros)))
 
 (comment
@@ -53,6 +62,7 @@
 
   ;; Load document devuelve un objeto de tipo lista por cada documento
   (def res (crear-documentos (take 2 (listar-obras :azure)) (partial load-document :langchain-azure-singleblob)))
+  (type (first res))
   (keys (ut/py-obj->clj-map (ffirst res)))
   (:metadata (ut/py-obj->clj-map (ffirst res)))
   (:type (ut/py-obj->clj-map (ffirst res)))
@@ -74,10 +84,14 @@
   (py. sp/token-splitter count_tokens (py/get-attr (first splitting) :page_content))
   (py.. (sp/token-splitter :chunk_size 750 :chunk_overlap 10) (count_tokens (first splitting)))
   (py. (first splitting) tokens)
-
   extension-splits
   (type splitting)
-  splitting
+  (map (fn [document]
+         (-> (ut/py-obj->clj-map document)
+             :metadata
+             :source))
+       splitting)
+  (map (fn [elem] (-> (ut/py-obj->clj-map elem) :metadata :source)) splitting)
   (count (map #(py/get-attr % :page_content) splitting))
   (def chunkk (py.- (py/get-item splitting 0) page_content))
   (println chunkk)
@@ -86,15 +100,16 @@
   (py/->py-list [chunkk])
   (count chunkk)
   (first chunkk)
-  (embed/embed-chunk :cohere {:texts [["Hola"]] :model "embed-multilingual-v3.0" :truncate "END"}) ;; Arroja error 400
-  (embed/embed-chunk :cohere {:texts [chunkk] :model "embed-multilingual-v3.0" :truncate "END"}) ;; Arroja error 400. ¿Será por el número de tokens?
-  (embed/embed-chunk :cohere {:texts [chunkk] :model "embed-multilingual-v2.0" :truncate "END"})
-  (embed/embed-chunk :cohere {:texts [chunkk]  :truncate "END"})
 
   (require '[cohere.client :as client])
   (client/generate :prompt "Hey, there! What is your name?")
   (client/embed :texts [chunkk])
-
+  (client/embed {:texts ["Hola ¿cómo estás?" "Hello, how are you?" "Hallo, wie geht's?"]
+                 :model "embed-multilingual-v2.0"
+                 :truncante "END"})
+  (client/embed {:texts ["Hola ¿cómo estás?" "Hello, how are you?" "Hallo, wie geht's?" "Bonjour! ca va!"]
+                 :model "embed-multilingual-light-v3.0"
+                 #_:truncante #_"END"})
   (System/getProperty "cohere.api.key")
 
   ;; Hay que hacer una partición de la colección en piezas de 96 items c/u
@@ -103,21 +118,25 @@
   (count (second part))
 
   (def resultado (->> (dividir-documentos res)
-                      (crear-embeddings :cohere))) 
+                      (crear-embeddings :cohere)))
+
+  (def resultado2 (->> (dividir-documentos [(first res)])
+                       (crear-embeddings :cohere)))
   (type (first resultado))
-  (tap> (first resultado))
-
-(crear-embeddings :cohere [])
-
-(def divs (dividir-documentos res))
-divs
-(count divs)  
-  
-  (let [m {:a 1 :b 2 :c [1 4]}]
-    #_(select-keys m [:a :c])
-    (seq m))
+  (tap> (first resultado)) 
+  (count resultado2)
+  (tap> resultado)
+  (type resultado)
+  (tap> resultado2) 
 
 
-  (seq? (map inc (range 30)))
+  (def divs (dividir-documentos res))
+  divs
+  (count divs)
+
+
+
+
+
 
   ) 
