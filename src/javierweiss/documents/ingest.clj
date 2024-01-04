@@ -5,45 +5,33 @@
             [javierweiss.split.split :refer [split]]
             [javierweiss.embed.embed :as embed]
             [javierweiss.db.db :as db]
-            [javierweiss.utils.utils :as ut]))
+            [javierweiss.utils.utils :as ut]
+            [javierweiss.documents.documents :refer [crear-documentos]]
+            [clojure.string :as string]))
 
-(defn crear-documentos
-  [list-or-listfn load-fn]
-  (u/log ::ingesta-de-documentos :status :inicio)
-  (let [obras (if (fn? list-or-listfn) (list-or-listfn) list-or-listfn)]
-    (keep identity
-          (for [obra obras] (load-fn obra)))))
-
-(defn dividir-documentos
-  [coleccion-documentos]
-  (->> coleccion-documentos
-       (map #(split sp/langchain-split-documents sp/token-splitter %))
-       (map #(map (fn [document] (py/get-attr document :page_content)) %))
-       (apply concat)
-       vec))
+(defn dividir-documento
+  [{:keys [documento split-fn splitter] :as state-map}]
+  (u/log ::iniciando-division-documento :documento documento)
+  (let [division (->> documento
+                      (map #(split split-fn splitter %))
+                      (map #(map (fn [document] (py/get-attr document :page_content)) %))
+                      (apply concat)
+                      vec)]
+    (assoc state-map :documento-dividido division)))
 
 (defn crear-embeddings
-  [servicio documentos-divididos]
-  (let [fuentes (map (fn [document]
-                       (-> (ut/py-obj->clj-map document)
-                           :metadata
-                           :source))
-                     documentos-divididos)
-        embeddings (embed/embed-chunk servicio documentos-divididos)
-        agregar-fuentes (fn [m] (assoc m :fuentes fuentes))] 
-    (if (map? embeddings)
-      (agregar-fuentes embeddings)
-      (map #(agregar-fuentes %) embeddings))))
-
-(defn- extraer-referencia 
-  [])
+  [{:keys [servicio documento-dividido] :as state-map}]
+  (u/log ::iniciando-embedding :servicio servicio)
+  (let [embeddings (embed/embed-chunk servicio documento-dividido)]
+    (assoc state-map :service-response embeddings)))
 
 (defn- textos-embeddings
   [{:keys [texts embeddings]}]
   (map #(vector %1 %2) texts embeddings))
  
 (defn guardar-embeddings
-  [servicio referencia service-response]
+  [{:keys [servicio referencia service-response] :as state-map}]
+  (u/log ::guardando-embeddings :servicio servicio :referencia referencia)
   (let [data (if (seq? service-response) 
                (mapv #(select-keys % [:texts :embeddings]) service-response)
                (vector (select-keys service-response [:texts :embeddings])))
@@ -53,15 +41,28 @@
                              [referencia nil txt (count txt) emb]))]
     (db/inserta-registros servicio registros)))
 
+(defn ingerir_documentos
+  [document-list servicio split-fn splitter]
+  (doseq [document document-list :let [referencia (-> (-> (ut/py-obj->clj-map (ffirst document)) :metadata :source)
+                                                      (string/replace % #"\.pdf" "")
+                                                      (string/split % #"/")
+                                                      last)]] (->> {:documento document
+                                                                                           :servicio servicio
+                                                                                           :split-fn split-fn
+                                                                                           :splitter splitter
+                                                                                           :referencia referencia}
+                                                                                          dividir-documentos
+                                                                                          (crear-embeddings servicio))))
 (comment
 
   (require '[javierweiss.cloudclients.listados :refer [listar-obras]]
            '[javierweiss.load.load :refer [load-document]]
            '[libpython-clj2.python :as py :refer [py. py.. py.-]]
            '[javierweiss.embed.embed :as embed])
-
+ 
   ;; Load document devuelve un objeto de tipo lista por cada documento
   (def res (crear-documentos (take 2 (listar-obras :azure)) (partial load-document :langchain-azure-singleblob)))
+  (def res1 (crear-documentos (take 1 (listar-obras :azure)) (partial load-document :langchain-azure-singleblob)))
   (type (first res))
   (keys (ut/py-obj->clj-map (ffirst res)))
   (:metadata (ut/py-obj->clj-map (ffirst res)))
@@ -130,9 +131,13 @@
   (tap> resultado2) 
 
 
-  (def divs (dividir-documentos res))
-  divs
-  (count divs)
+  (def divs (dividir-documentos res1))
+  divs  
+  (def ruta (-> (ut/py-obj->clj-map (ffirst res1)) :metadata :source))
+  (apply str (string/replace ruta #"\.pdf" "")) 
+  (ut/py-obj->clj-map (ffirst res1))
+  (py/get-attr (ffirst res1) :metadata) 
+  (count divs)  
 
 
 
