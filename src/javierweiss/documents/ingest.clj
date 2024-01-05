@@ -7,12 +7,13 @@
             [javierweiss.db.db :as db]
             [javierweiss.utils.utils :as ut]
             [javierweiss.documents.documents :refer [crear-documentos]]
-            [clojure.string :as string]))
+            [clojure.string :as string])
+  (:import java.time.LocalDateTime))
 
 (defn dividir-documento
-  [{:keys [documento split-fn splitter] :as state-map}]
-  (u/log ::iniciando-division-documento :documento documento)
-  (let [division (->> documento
+  [{:keys [documento split-fn splitter referencia] :as state-map}]
+  (u/log ::iniciando-division-documento :documento referencia)
+  (let [division (->> (ffirst documento)
                       (map #(split split-fn splitter %))
                       (map #(map (fn [document] (py/get-attr document :page_content)) %))
                       (apply concat)
@@ -30,7 +31,7 @@
   (map #(vector %1 %2) texts embeddings))
  
 (defn guardar-embeddings
-  [{:keys [servicio referencia service-response] :as state-map}]
+  [{:keys [servicio referencia service-response]}]
   (u/log ::guardando-embeddings :servicio servicio :referencia referencia)
   (let [data (if (seq? service-response) 
                (mapv #(select-keys % [:texts :embeddings]) service-response)
@@ -43,16 +44,23 @@
 
 (defn ingerir_documentos
   [document-list servicio split-fn splitter]
-  (doseq [document document-list :let [referencia (-> (-> (ut/py-obj->clj-map (ffirst document)) :metadata :source)
-                                                      (string/replace % #"\.pdf" "")
-                                                      (string/split % #"/")
-                                                      last)]] (->> {:documento document
-                                                                                           :servicio servicio
-                                                                                           :split-fn split-fn
-                                                                                           :splitter splitter
-                                                                                           :referencia referencia}
-                                                                                          dividir-documentos
-                                                                                          (crear-embeddings servicio))))
+  (u/log ::iniciando-ingesta-documentos :parametros {:servicio servicio :split-fn split-fn :splitter splitter})
+  (doseq [document document-list :let [referencia (-> (-> (ut/py-obj->clj-map (first document)) :metadata :source)
+                                                      (string/replace #"\.pdf" "")
+                                                      (string/split #"/")
+                                                      last)]]
+    (try
+      (u/log ::ingiriendo-documento :documento referencia :timestamp (System/currentTimeMillis) :fecha (LocalDateTime/now))
+      (->> {:documento document
+            :servicio servicio
+            :split-fn split-fn
+            :splitter splitter
+            :referencia referencia}
+           dividir-documento
+           crear-embeddings
+           guardar-embeddings)
+      (catch Exception e (u/log ::error-en-ingesta-de-documents :documento referencia :excepcion (.getMessage e))))))
+
 (comment
 
   (require '[javierweiss.cloudclients.listados :refer [listar-obras]]
@@ -63,6 +71,7 @@
   ;; Load document devuelve un objeto de tipo lista por cada documento
   (def res (crear-documentos (take 2 (listar-obras :azure)) (partial load-document :langchain-azure-singleblob)))
   (def res1 (crear-documentos (take 1 (listar-obras :azure)) (partial load-document :langchain-azure-singleblob)))
+
   (type (first res))
   (keys (ut/py-obj->clj-map (ffirst res)))
   (:metadata (ut/py-obj->clj-map (ffirst res)))
@@ -72,30 +81,20 @@
   (def contenidos (map (fn [pyobj]
                          (let [elem (first pyobj)]
                            (py/get-attr elem :page_content)))
-                       res))
-  (println contenidos)
-  (count (first contenidos))
+                       res)) 
 
   (def splitting (split sp/langchain-split-documents sp/token-splitter (first res)))
   (count splitting)
   (count (py/get-attr (first splitting) :page_content))
   (def extension-splits (map (fn [doc] (let [pagina (py/get-attr doc :page_content)]
                                          (count pagina)))
-                             splitting))
-  (py. sp/token-splitter count_tokens (py/get-attr (first splitting) :page_content))
-  (py.. (sp/token-splitter :chunk_size 750 :chunk_overlap 10) (count_tokens (first splitting)))
-  (py. (first splitting) tokens)
+                             splitting)) 
   extension-splits
-  (type splitting)
-  (map (fn [document]
-         (-> (ut/py-obj->clj-map document)
-             :metadata
-             :source))
-       splitting)
-  (map (fn [elem] (-> (ut/py-obj->clj-map elem) :metadata :source)) splitting)
+  (type splitting) 
   (count (map #(py/get-attr % :page_content) splitting))
   (def chunkk (py.- (py/get-item splitting 0) page_content))
   (println chunkk)
+
 ;; https://docs.cohere.com/reference/embed
   ;; No olvidar que el máximo de textos por llamado es 96.
   (py/->py-list [chunkk])
@@ -112,36 +111,8 @@
                  :model "embed-multilingual-light-v3.0"
                  #_:truncante #_"END"})
   (System/getProperty "cohere.api.key")
-
-  ;; Hay que hacer una partición de la colección en piezas de 96 items c/u
-  (def part (partition 96 splitting))
-  (count part)
-  (count (second part))
-
-  (def resultado (->> (dividir-documentos res)
-                      (crear-embeddings :cohere)))
-
-  (def resultado2 (->> (dividir-documentos [(first res)])
-                       (crear-embeddings :cohere)))
-  (type (first resultado))
-  (tap> (first resultado)) 
-  (count resultado2)
-  (tap> resultado)
-  (type resultado)
-  (tap> resultado2) 
-
-
-  (def divs (dividir-documentos res1))
-  divs  
-  (def ruta (-> (ut/py-obj->clj-map (ffirst res1)) :metadata :source))
-  (apply str (string/replace ruta #"\.pdf" "")) 
-  (ut/py-obj->clj-map (ffirst res1))
-  (py/get-attr (ffirst res1) :metadata) 
-  (count divs)  
-
-
-
-
+  
+  (ingerir_documentos res1 :cohere sp/langchain-split-documents sp/token-splitter)
 
 
   ) 
