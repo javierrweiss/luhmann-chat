@@ -3,22 +3,25 @@
             [javierweiss.db.sql.consultas :refer [buscar_similitudes]]
             [javierweiss.db.sql.ddl :refer [crear-tabla-archivo-luhmann]]
             [javierweiss.db.sql.dml :refer [crear-registro]]
-            [javierweiss.configuracion.config :refer [configuracion]]
+            [javierweiss.configuracion.config :refer [configuracion-db]]
             [com.brunobonacci.mulog :as u]))
 
-(def dbs (->> (configuracion) :db keys (apply hash-set)))
+(defmulti busqueda (fn [conf _] (:seleccion conf)))
 
-(defmulti buscar (fn [db _] (dbs db)))
-
-(defmethod buscar :aws
+(defmethod busqueda :aws
  [_ embeddings]
  (buscar_similitudes full-options embeddings))
 
-(defmethod buscar :azure
+(defmethod busqueda :azure
   [_ embeddings]
   (buscar_similitudes conn-url embeddings))
 
-(defmulti crea-tabla-principal (fn [db _] (dbs db)))
+(defmethod busqueda :default [_ _]
+  (throw (IllegalArgumentException. "Opción no implementada")))
+
+
+
+(defmulti crea-tabla-principal (fn [conf _] (:seleccion conf)))
 
 (defmethod crea-tabla-principal :aws
  [_ vector-size]
@@ -28,7 +31,12 @@
   [_ vector-size]
   (crear-tabla-archivo-luhmann conn-url vector-size))
 
-(defmulti inserta-registros (fn [db _] (dbs db)))
+(defmethod crea-tabla-principal :default [_ _]
+  (throw (IllegalArgumentException. "Opción no implementada")))
+
+
+
+(defmulti inserta-registros (fn [conf _] (:seleccion conf)))
 
 (defmethod inserta-registros :aws
  [_ valores]
@@ -38,13 +46,20 @@
   [_ valores]
   (crear-registro conn-url valores))
 
+(defmethod inserta-registros :default [_ _]
+  (throw (IllegalArgumentException. "Opción no implementada")))
+
+
+
+(def buscar (partial busqueda configuracion-db))
+
+(def crear-tabla (partial crea-tabla-principal configuracion-db))
+
+(def insertar (partial inserta-registros configuracion-db))
    
 (comment
   
-  (buscar :postgres) 
-  (dbs :aws)
-  (dbs :weaviate)
-  (crea-tabla-principal 768)
+  
   (ns-unmap *ns* 'b)
   )
 

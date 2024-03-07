@@ -1,11 +1,11 @@
 (ns javierweiss.db.sql.conexion
   (:require [next.jdbc :as jdbc]
             [next.jdbc.connection :as connection]
-            [javierweiss.configuracion.config :refer [configuracion]])
+            [javierweiss.configuracion.config :refer [configuracion-db]])
   (:import com.zaxxer.hikari.HikariDataSource
            java.sql.SQLException))
  
-(def conf (-> (configuracion) :db :azure))
+(def conf (-> configuracion-db :db))
 
 (def full-options {:dbtype (:dbtype conf)
                    :db-name (:db-name conf)

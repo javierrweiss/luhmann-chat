@@ -1,27 +1,31 @@
 (ns javierweiss.cloudclients.uploads
-  (:require [javierweiss.cloudclients.clients :as c]
+  (:require [javierweiss.cloudclients.clients :refer [cliente]]
             [cognitect.aws.client.api :as aws]
-            [javierweiss.configuracion.config :refer [configuracion]]
+            [javierweiss.configuracion.config :refer [configuracion-storage]]
             [clojure.java.io :as io]
             [com.brunobonacci.mulog :as u])
   (:import java.io.IOException))
 
-(def config (configuracion))
+(defmulti almacenar (fn [conf _ _ _] 
+                      (:seleccion conf)))
 
-(defmulti almacenar (fn [p _ _ _] ((descendants :javierweiss.cloudclients.clients/cloud-provider) p)))
+(defmethod almacenar :aws [conf ruta nombre carpeta]
+  (let [config (:storage-service conf)]
+    (try
+      (aws/invoke cliente {:op :PutObject :request {:Bucket (str (:bucket-name config) carpeta)
+                                                    :Key nombre
+                                                    :Body (io/input-stream ruta)}})
+      (catch IOException e (u/log ::error-almacenamiento-s3 :mensaje (.getMessage e))))))
 
-(defmethod almacenar :javierweiss.cloudclients.clients/aws [_ ruta nombre carpeta]
-  (try
-    (aws/invoke c/cliente-aws-s3 {:op :PutObject :request {:Bucket (str (:bucket-name config) carpeta)
-                                                           :Key nombre
-                                                           :Body (io/input-stream ruta)}})
-    (catch IOException e (u/log ::error-almacenamiento-s3 (.getMessage e)))))
+(defmethod almacenar :default [_ _ _ _]
+  (throw (IllegalArgumentException. "La opción seleccionada no está implementada")))
 
-(defmethod almacenar :javierweiss.cloudclients.clients/azure [_ ])
+(def almacena (partial almacenar configuracion-storage))
 
 (comment 
-
-  (almacenar :javierweiss.cloudclients.clients/aws "/ruta/larga" "archivoX.pdf" "/carpetaPeta")
+ 
+  (almacenar {:seleccion :aws :storage-service {}} "/ruta/larga" "archivoX.pdf" "/carpetaPeta")
+  (almacenar {:seleccion :azure :storage-service {}} "/ruta/larga" "archivoX.pdf" "/carpetaPeta")
   (ns-unmap *ns* 'almacenar) 
   )
 
