@@ -1,9 +1,8 @@
 (ns javierweiss.documents.ingest
-  (:require [com.brunobonacci.mulog :as u]
-            [javierweiss.split.splitters.langchainsplitter :as sp]
+  (:require [com.brunobonacci.mulog :as u] 
             [libpython-clj2.python :as py]
-            [javierweiss.split.split :refer [split]]
-            [javierweiss.embed.embed :as embed]
+            [javierweiss.split.split :refer [split-by-character split-by-token]]
+            [javierweiss.embed.embed :refer [embed]]
             [javierweiss.db.db :as db]
             [javierweiss.utils.utils :as ut]
             [javierweiss.documents.documents :refer [crear-documentos]]
@@ -11,19 +10,19 @@
   (:import java.time.LocalDateTime))
 
 (defn dividir-documento
-  [{:keys [documento split-fn splitter referencia] :as state-map}]
+  [{:keys [documento referencia] :as state-map}]
   (u/log ::iniciando-division-documento :documento referencia)
   (let [division (->> (ffirst documento)
-                      (map #(split split-fn splitter %))
+                      (map #(split-by-token %))
                       (map #(map (fn [document] (py/get-attr document :page_content)) %))
                       (apply concat)
                       vec)]
     (assoc state-map :documento-dividido division)))
 
 (defn crear-embeddings
-  [{:keys [servicio documento-dividido] :as state-map}]
-  (u/log ::iniciando-embedding :servicio servicio)
-  (let [embeddings (embed/embed-chunk servicio documento-dividido)]
+  [{:keys [documento-dividido] :as state-map}]
+  (u/log ::iniciando-embedding)
+  (let [embeddings (embed documento-dividido)]
     (assoc state-map :service-response embeddings)))
 
 (defn- textos-embeddings
@@ -31,8 +30,8 @@
   (map #(vector %1 %2) texts embeddings))
  
 (defn guardar-embeddings
-  [{:keys [servicio referencia service-response]}]
-  (u/log ::guardando-embeddings :servicio servicio :referencia referencia)
+  [{:keys [referencia service-response]}]
+  (u/log ::guardando-embeddings :referencia referencia)
   (let [data (if (seq? service-response) 
                (mapv #(select-keys % [:texts :embeddings]) service-response)
                (vector (select-keys service-response [:texts :embeddings])))
@@ -40,21 +39,18 @@
         registros (into [] (for [tupla tuplas-texto-embeddings :let [txt (first tupla)
                                                                      emb (second tupla)]] 
                              [referencia nil txt (count txt) emb]))]
-    (db/inserta-registros servicio registros)))
+    (db/insertar registros)))
 
 (defn ingerir_documentos
-  [document-list servicio split-fn splitter]
-  (u/log ::iniciando-ingesta-documentos :parametros {:servicio servicio :split-fn split-fn :splitter splitter})
+  [document-list]
+  (u/log ::iniciando-ingesta-documentos)
   (doseq [document document-list :let [referencia (-> (-> (ut/py-obj->clj-map (first document)) :metadata :source)
                                                       (string/replace #"\.pdf" "")
                                                       (string/split #"/")
                                                       last)]]
     (try
       (u/log ::ingiriendo-documento :documento referencia :timestamp (System/currentTimeMillis) :fecha (LocalDateTime/now))
-      (->> {:documento document
-            :servicio servicio
-            :split-fn split-fn
-            :splitter splitter
+      (->> {:documento document 
             :referencia referencia}
            dividir-documento
            crear-embeddings

@@ -1,11 +1,15 @@
 (ns javierweiss.split.split
   (:require [libpython-clj2.python :as py :refer [py. py.. py.-]] 
-            [javierweiss.utils.utils :as ut])) 
+            [javierweiss.utils.utils :as ut]
+            [javierweiss.split.splitters.langchainsplitter :refer [langchain-create-documents langchain-split-documents splitter token-splitter]])) 
 
-(defn split
-  "Recibe una función de splitting, un splitter y un documento python"
-  [split-fn splitter doc & {:keys [size overlap] :as opts}]
-  (split-fn splitter doc opts))
+(defn create-splitting-fn
+  [split-fn splitter]
+  (partial split-fn splitter))
+
+(def split-by-character "doc & {:keys [size overlap] :as opts}" (create-splitting-fn langchain-create-documents splitter))
+
+(def split-by-token "doc & {:keys [size overlap] :as opts}" (create-splitting-fn langchain-create-documents token-splitter))
 
 (comment
 
