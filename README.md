@@ -55,7 +55,11 @@ Y finalmente conectarse al REPL.
 
 ## TAREAS PENDIENTES
 - [ ] Necesitamos idear una forma de validar las lecturas del OCR
-- [ ] Realizar los embeddings 
+- [ ] Implementar retrievers?
+- [ ] Crear interfaz para chat
+- [ ] Crear pipeline para crear embedding de la consulta e inyectar en el modelo
+- [ X ] Probar creación de embeddings
+- [ X ] Guardado de embedding en Vector Store 
 - [ X ] Crear interfaces y módulos para las distintas fases del proceso de recuperación 
 
 ## Troubleshooting
