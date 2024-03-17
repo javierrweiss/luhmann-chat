@@ -44,7 +44,11 @@ Basta sólo activar el entorno *luhmann* cuando se comience a trabajar y conecta
 Ejecutar el script *create_env.sh* para crear el entorno virtual. Luego activar el entorno (asegúrese de crear una nueva terminal): 
 
 ```bash
-conda activate luhmann
+conda activate luhmann 
+```
+ó
+```bash
+source activate luhmann
 ```
 
 Y finalmente conectarse al REPL.

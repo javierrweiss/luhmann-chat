@@ -16,5 +16,6 @@
 			"version": "stable"
 		}
 	},
-	"postCreateCommand": "pip3 install --user -r requirements.txt && conda create -n luhmann --clone /opt/conda"
+	"postCreateCommand": "pip3 install --user -r requirements.txt && conda create -n luhmann --clone /opt/conda",
+	"runArgs": ["--env-file", ".devcontainer/devcontainer.env"]
 } 
