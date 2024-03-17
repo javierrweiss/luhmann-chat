@@ -5,6 +5,8 @@
  
 (def loading-services #{:langchain-aws :langchain-azure-singleblob :langchain-azure-blob :llama})
 
+(def azure-container (-> configuracion-storage :storage-service))
+
 (defmulti load-document (fn [service _ _] (loading-services service)))
 
 (defmethod load-document :langchain-azure-blob 
@@ -22,20 +24,15 @@
 (defmethod load-document :default
   [_ _ _]
   (throw (IllegalArgumentException. "El cargador elegido no se encuentra implementado.")))
+ 
+(def load-all-from-storage (fn [] (load-document :langchain-azure-blob azure-container nil)))
 
-(def load-all-from-storage (load-document :langchain-azure-blob configuracion-storage nil))
-
-(def load-document-from-storage "Recibe el path de un archivo para cargar" (partial load-document :langchain-azure-singleblob configuracion-storage))
+(def load-document-from-storage "Recibe el path de un archivo para cargar" (partial load-document :langchain-azure-singleblob azure-container))
 
 
 (comment
     
-  ;; Toma una eternidad y falla con archivos .djvu
-   (def docs 
-     (py. (lngld/AzureBlobStorageContainerLoader :conn_str (:blob_conn_string azure-config) :container (:container azure-config)) load))
-
-  (def doc (load-document :langchain-azure-singleblob "Luhmann Der neue Chef.pdf"))
-  (py.- (py/get-item doc  0) page_content) 
+  
   (remove-all-methods load-document) 
   (ns-unmap *ns* 'load-document)
   )

@@ -5,7 +5,7 @@
 (defmulti setup-model :seleccion)
 
 (defmethod setup-model :cohere [conf]
-  (System/setProperty "cohere.api.key" (:cohere-key conf)))
+  (System/setProperty "cohere.api.key" (-> conf :llm-service :cohere-key )))
 
 (defmethod setup-model :openai [conf]
   (let [openai-embedding (py/from-import langchain.embeddings OpenAIEmbeddings)]
@@ -18,10 +18,12 @@
 
 (defmethod setup-model :default [_]
   (throw (IllegalArgumentException. "No existe configuración implementada para el modelo indicado")))
-  
+    
 (def modelo (setup-model configuracion-llm))
 
 ;;(def cohere-embedding "& {:keys [texts model truncate], :or {model \"embed-english-v2.0\", truncate \"END\"}}" embed)
-
-
-;; 
+ 
+(comment 
+  
+  (System/getProperty "cohere.api.key")
+  )

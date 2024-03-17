@@ -58,6 +58,14 @@ Y finalmente conectarse al REPL.
 - [ ] Realizar los embeddings 
 - [ X ] Crear interfaces y módulos para las distintas fases del proceso de recuperación 
 
+## Troubleshooting
+
+Si obtienes una excepción al cargar documentos del tipo:  ImportError: libGL.so.1: cannot open shared object file: No such file or directory 
+Debes instalar el siguiente paquete:
+
+```bash
+sudo apt install libgl1-mesa-glx
+```
 
 ## Licencia
 

@@ -47,7 +47,7 @@
   (ejecuta-sentencia ["SELECT * 
                          FROM information_schema.tables
                          WHERE table_schema = 'public' AND table_type='BASE TABLE'"] conn-url)
-  (ejecuta-sentencia ["SELECT *
-                         FROM archivo_luhmann"] conn-url)
+  (tap> (ejecuta-sentencia ["SELECT *
+                         FROM archivo_luhmann"] conn-url))
   
   )  
