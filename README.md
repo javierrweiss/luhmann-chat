@@ -61,6 +61,7 @@ Y finalmente conectarse al REPL.
 - [ X ] Probar creación de embeddings
 - [ X ] Guardado de embedding en Vector Store 
 - [ X ] Crear interfaces y módulos para las distintas fases del proceso de recuperación 
+- [ ] Crear un envoltorio para la API de Cohere y cubrir los casos que deja fuera cohere-clojure. ¿Sustituir los llamados a cohere-clojure?
 
 ## Troubleshooting
 
