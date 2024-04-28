@@ -62,6 +62,8 @@ Y finalmente conectarse al REPL.
 - [ X ] Guardado de embedding en Vector Store 
 - [ X ] Crear interfaces y módulos para las distintas fases del proceso de recuperación 
 - [ ] Crear un envoltorio para la API de Cohere y cubrir los casos que deja fuera cohere-clojure. ¿Sustituir los llamados a cohere-clojure?
+- [ X ] Hay un bug extraño con los loaders: regresan una secuencia vacía a pesar de logear cada documento y tomarse el tiempo de procesamiento
+- [ ] Crear un flujo asíncrono para el pipeline de ingestión
 
 ## Troubleshooting
 

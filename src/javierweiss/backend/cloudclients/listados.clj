@@ -28,8 +28,8 @@
 
 (def obras (listar-obras configuracion-storage))
  
-(comment
-  (listar-obras configuracion-storage)
+(comment 
+  (tap> (listar-obras configuracion-storage))
   (listar-obras {:storage-service {}
                  :seleccion :aws})
   (listar-obras {:storage-service {}

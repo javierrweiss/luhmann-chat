@@ -57,22 +57,34 @@
 
 (comment
 
-  (require '[javierweiss.cloudclients.listados :refer [obras]]
-           '[javierweiss.load.load :refer [load-all-from-storage load-document-from-storage]]
+  (require '[javierweiss.backend.cloudclients.listados :refer [obras]]
+           '[javierweiss.backend.load.load :refer [load-all-from-storage load-document-from-storage]]
            '[libpython-clj2.python :as py :refer [py. py.. py.-]]
-           '[javierweiss.embed.embed :as embed])
+           '[javierweiss.backend.embed.embed :as embed])
 
   (def zeit_und_gedachtnis (obras 3))
 
+  (def lista_obras (->> obras  
+                        (remove #(= % "Luhmann Zeit und Gedächtnis.pdf"))
+                        (filter #(re-seq #"\w+\.pdf" %))))
+(count lista_obras)
   ;; Load document devuelve un objeto de tipo lista por cada documento
   (def res (crear-documentos [zeit_und_gedachtnis] load-document-from-storage))
   #_(def res1 (crear-documentos (take 2 obras)))
-
+  (def documentos_luhmann (crear-documentos lista_obras load-document-from-storage)
+    #_(load-all-from-storage))
+    
+  (first documentos_luhmann)
+   
   (py/call-attr (first res) "__len__")
   (py/call-attr (first res) "__class__")
   (dividir-documento {:documento res :referencia "Niklas Luhmann, Zeit und Gedächtnis"})
 
   (def ingestion (ingerir_documentos res))
+ 
+  (def ingestion2 (ingerir_documentos documentos_luhmann))
+
+  (first ingestion2)
 
   (def embs (->> {:documento (first res)
                   :referencia "Niklas Luhmann, Zeit und Gedächtnis"}
