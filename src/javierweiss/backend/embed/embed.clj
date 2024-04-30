@@ -40,3 +40,26 @@
 (def embed
   "Recibe `documents` y `tipo-input` (string) que pueder search_document, search_query, classification ó clustering"
   (partial embed-chunk configuracion-llm)) 
+
+
+(comment
+  
+  (let [docs (partition 96 (range 1 10000000))] 
+    (time (doall
+           (pmap  
+            #(reduce *' %)
+            docs))))
+  
+  (let [docs (partition 96 (range 1 10000000))]
+    (time 
+          (map 
+           #(reduce *' %) docs)))
+
+  (let [docs (partition 512 (range 1 10000000))]
+    (time (doall
+           (pmap
+            #(reduce *' %)
+            docs))))
+  
+
+  )

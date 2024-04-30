@@ -91,7 +91,9 @@
                                                  "Accept" "application/json"}
                                        :body (json/encode params)})]
     (if (== status 200)
-      (:embeddings body)
+      (let [{:keys [embeddings texts]} body]
+        {:embeddings embeddings
+         :texts texts})
       (u/log ::error-en-request-embedding :status status :mensaje error))))
 
 
@@ -153,7 +155,6 @@
                                                      :input_type "search_query"})}
           (fn [{:keys [status body error]}]
             (if (== status 200)
-              (:embeddings body)
-              (u/log ::error-en-request-embedding :status status :mensaje error)))
-          {:async true}))  
+              body #_(:embeddings body)
+              (u/log ::error-en-request-embedding :status status :mensaje error)))))  
   ) 
