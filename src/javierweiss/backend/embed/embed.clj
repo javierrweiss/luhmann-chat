@@ -1,6 +1,5 @@
 (ns javierweiss.backend.embed.embed
-  (:require #_[cohere.client :as cohere]
-            [javierweiss.backend.api-wrappers.cohere :as cohere]
+  (:require [javierweiss.backend.api-wrappers.cohere :as cohere]
             [javierweiss.backend.embed.model-configuration :refer [modelo]]
             [javierweiss.backend.configuracion.config :refer [configuracion-llm]]
             [libpython-clj2.python :as py :refer [py. py.-]]
@@ -21,7 +20,7 @@
       (> len 96) (let [docs (partition 96 documents)]
                    (u/log ::generando-embeddings-en-paralelo :cantidad-documentos len)
                    (doall
-                    (pmap
+                    (pmap                                                                    ;; En verdad quiero usar pmap??
                      #(cohere/embed {:texts %
                                      :input_type tipo-input
                                      :model "embed-multilingual-v2.0"
