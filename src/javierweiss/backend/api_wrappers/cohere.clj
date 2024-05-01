@@ -28,7 +28,7 @@
            frequency_penalty
            presence_penalty
            tools
-           tool_results] 
+           tool_results]
     :or {stream false
          temperature 0.8}}]
   {:pre [(some? message)]}
@@ -87,9 +87,9 @@
                  embedding_types (assoc :embedding_types embedding_types)
                  truncate (assoc :truncate truncate))
         {:keys [status body error]} (POST (str url "/embed") {:oauth-token token
-                                       :headers {"Content-Type" "application/json"
-                                                 "Accept" "application/json"}
-                                       :body (json/encode params)})]
+                                                              :headers {"Content-Type" "application/json"
+                                                                        "Accept" "application/json"}
+                                                              :body (json/encode params)})]
     (if (== status 200)
       (let [{:keys [embeddings texts]} body]
         {:embeddings embeddings
