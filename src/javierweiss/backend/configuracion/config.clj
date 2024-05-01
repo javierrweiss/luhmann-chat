@@ -13,7 +13,7 @@
     (not (contains? (servicio config-map nil) nombre)) (throw (IllegalArgumentException. (str "El servicio o nombre indicado no se encuentra en el mapa de configuracion")))
     :else {servicio (-> config-map servicio nombre)
            :seleccion nombre}))
-
+ 
 (def configuracion-db (obtener-configuracion :db :azure))
 
 (def configuracion-storage (obtener-configuracion :storage-service :azure))

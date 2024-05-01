@@ -8,6 +8,8 @@
 (u/start-publisher! {:type :console}) 
 (def p (p/open {:launcher :vs-code}))
 (add-tap #'p/submit)   
+(require '[flow-storm.api :as fs-api])
+(fs-api/local-connect)
  
 (comment
 (p/close) 

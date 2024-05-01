@@ -66,7 +66,10 @@
   (partial inserta-registros configuracion-db))
    
 (comment 
-  (ns-unmap *ns* 'b)
+  
+  (require '[javierweiss.backend.retrieve.retrieve :refer [emb]])
+  
+  (buscar (:embeddings emb) :l2-distance)
   )
 
 

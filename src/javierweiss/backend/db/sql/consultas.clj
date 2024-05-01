@@ -14,7 +14,7 @@
                :cosine-distance "<=>" 
                :l2-distance "<->"
                :inner-product "<#>")
-        emb (-> embeddings_consulta into-array)
+        emb #_(-> embeddings_consulta into-array str) (str embeddings_consulta)
         consulta (sql/format {:select [:contenido :referencia]
                               :from :archivo-luhmann
                               :order-by [:embedding algo emb]
@@ -25,19 +25,10 @@
 
 
 (comment
-
-  (sa/instance? [double] [34.3 43.4 232.3 232.02])
-  (type [34.3 43.4 232.3 232.02])
-  (def na (sa/new [double] [34.3 43.4 232.3 232.02]))
-  (sa/instance? [double] na)
-  (let [emb (into-array (first javierweiss.retrieve.retrieve/r))
-        opts (:db javierweiss.configuracion.config/configuracion-db)
-        consulta (sql/format {:select :contenido
-                              :from :archivo-luhmann
-                              :order-by [:embedding "<=>" emb]
-                              :limit 3})]
-    (ejecuta-sentencia consulta opts))
-#_(if (sa/instance? [double] embeddings_consulta)
-    embeddings_consulta
-    (sa/new [double] embeddings_consulta))
-  ) 
+  (require '[javierweiss.backend.retrieve.retrieve :refer [emb]])
+  (sql/format {:select [:contenido :referencia]
+               :from :archivo-luhmann
+               :order-by [:embedding "<=>" (into-array (:embeddings emb))]
+               :limit 3})
+  
+  :rcf)

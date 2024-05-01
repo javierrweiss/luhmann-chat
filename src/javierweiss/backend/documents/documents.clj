@@ -32,29 +32,8 @@
            '[clojure.string :as string])
 
   (def xf (comp (map #(str "Procesando: " %)) (map #(string/replace % #"\.pdf" ""))))
-
-  (eduction xf javierweiss.backend.documents.ingest/lista_obras)
-
-
-  (->> (m/ap (str "Procesado: " (m/?> 5 (m/seed javierweiss.backend.documents.ingest/lista_obras))))
-       (m/reduce conj)
-       m/?)
-
-  (m/? (m/reduce conj (m/eduction (map inc) (m/seed [1 2 3]))))
-
-  (m/? (m/reduce conj (m/eduction xf (m/seed javierweiss.backend.documents.ingest/lista_obras))))
-
-  (let [a (m/ap (str "Procesado: " (m/?> 5 (m/seed javierweiss.backend.documents.ingest/lista_obras))))]
-    (m/? (m/reduce conj a)))
-
-  (m/? (m/reduce (constantly nil) (m/ap (m/?> 5 (m/seed javierweiss.backend.documents.ingest/lista_obras))
-                                        (println "Hecho"))))
-
-  (def documents (m/ap (-> (m/?> 10 (m/seed javierweiss.backend.documents.ingest/lista_obras))
-                           load-document-from-storage)))
   
-  (def docs (m/? (m/reduce conj documents)))
+  (m/? (m/reduce conj (m/eduction (map #(-> % inc println)) (m/seed [1 2 3]))))
   
-  (tap> docs)
  
   :rcf)
