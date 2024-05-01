@@ -6,14 +6,14 @@
 
 (defn send-http-request 
   [method url & [request callback async]]
-  (u/log ::sending-request :args [method url request callback async])
+  (u/log ::sending-request :args [method url (dissoc request :oauth-token) callback async])
   (try 
     (if async
          (method url request (if callback 
                                (comp callback json/json-body->clj) 
                                json/json-body->clj))
          (json/json-body->clj @(method url request)))
-    (catch IOException e (u/log ::error-en-request :metodo method :url url :async async :request request :mensaje (.getMessage e)))))
+    (catch IOException e (u/log ::error-en-request :metodo method :url url :async async :request (dissoc request :oauth-token) :mensaje (.getMessage e)))))
 
 (defn GET
   [url & [request callback {:keys [async] :or {async false}}]]
