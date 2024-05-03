@@ -141,7 +141,8 @@
   (tap> (POST (str url "/chat") {:headers {"Content-Type" "application/json"
                                            "Accept" "application/json" 
                                            "Authorization" (str "Bearer " token)} 
-                                 :body (json/encode {:message "¿Quién fue Georg Simmel?"})}))
+                                 :body (json/encode {:message "¿Quién fue Georg Simmel?"
+                                                     :search_queries_only true})}))
   
   (tap> (POST (str url "/chat") {:oauth-token token 
                                  :headers {"Content-Type" "application/json"

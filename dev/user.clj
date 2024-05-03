@@ -9,7 +9,7 @@
 (def p (p/open {:launcher :vs-code}))
 (add-tap #'p/submit)   
 (require '[flow-storm.api :as fs-api])
-(fs-api/local-connect)
+#_(fs-api/local-connect) ;; falla porque estamos en un container
  
 (comment
 (p/close) 

@@ -58,12 +58,13 @@ Y finalmente conectarse al REPL.
 - [ ] Implementar retrievers?
 - [ ] Crear interfaz para chat
 - [ ] Crear pipeline para crear embedding de la consulta e inyectar en el modelo
-- [ X ] Probar creación de embeddings
-- [ X ] Guardado de embedding en Vector Store 
-- [ X ] Crear interfaces y módulos para las distintas fases del proceso de recuperación 
+- [X] Probar creación de embeddings
+- [X] Guardado de embedding en Vector Store 
+- [X] Crear interfaces y módulos para las distintas fases del proceso de recuperación 
 - [ ] Crear un envoltorio para la API de Cohere y cubrir los casos que deja fuera cohere-clojure. ¿Sustituir los llamados a cohere-clojure?
-- [ X ] Hay un bug extraño con los loaders: regresan una secuencia vacía a pesar de logear cada documento y tomarse el tiempo de procesamiento
-- [ ] Crear un flujo asíncrono para el pipeline de ingestión
+- [X] Hay un bug extraño con los loaders: regresan una secuencia vacía a pesar de logear cada documento y tomarse el tiempo de procesamiento
+- [X] Crear un flujo asíncrono para el pipeline de ingestión
+- [ ] Cohere ya tiene una versión 3 de su modelo políglota con una dimensión de 1024. Nos adaptamos al modelo 2 creando una tabla donde el campo correspondiente al embedding tiene 768 dimensiones. ¿Cómo adaptarnos al cambio si queremos cambiar de modelo?
 
 ## Troubleshooting
 

@@ -30,6 +30,20 @@
 
   (def emb (-> ["¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?"]
                (embed "search_query")))
+  
+  (def emb2 (-> ["¿Cuál es el concepto fundamental de la sociología de Luhmann?"]
+               (embed "search_query")))
+  
+  (def emb3 (-> ["¿Qué significa sociedad?"]
+                (embed "search_query")))
+  
+  (let [conciencia (-> ["¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?"]
+                       (embed "search_query")
+                       :embeddings)
+        concepto_fundamental (-> ["¿Cuál es el concepto fundamental de la sociología de Luhmann?"]
+                                 (embed "search_query")
+                                 :embeddings)]
+    (= conciencia concepto_fundamental))
    
   (type (into-array (seq (:embeddings emb))))
 
@@ -37,8 +51,8 @@
 
   (tap> (cohere/chat {:message "¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?"
                       :search_queries_only true}))
-
-  (tap> (embeber-y-buscar-con-keywords "¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?" :l2-distance))
+ 
+  (tap> (embeber-y-buscar-con-keywords "Welche Rolle spielt das Bewusstsein in die Kommunikation?" :l2-distance))
 
   (def r (-> (embed ["¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?"])
              :embeddings))
@@ -46,10 +60,10 @@
   (tap> r)
 
   (into-array (first r))
-
-  ;; Para este caso simple, los tres algoritmos trajeron los mismos resultados 
-  (def r (embeber-y-buscar "¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?" :cosine-distance))
-  (tap> r)
+ 
+  ;; Para este caso simple, los tres algoritmos trajeron los mismos resultados  
+  (def r (embeber-y-buscar "¿Cuál es el concepto fundamental de la sociología de Luhmann?" :cosine-distance))
+  (tap> (embeber-y-buscar "¿Qué es la teoría de los sistemas?" :cosine-distance))
   ;;Execution error (IllegalArgumentException) at java.lang.reflect.Array/set (Array.java:-2).
 ; array element type mismatch
   (tap> (embeber-y-buscar "¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?" :l2-distance))
