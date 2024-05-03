@@ -36,3 +36,9 @@ Sería interesante releer el artículo y ver qué tan certeros son los resultado
 --------------------------------------------------------------
 
 Creo que no es buena idea usar cohere-clojure. Hay cosas que no están implementadas y todo se mueve muy rápido. Al menos no por ahora. 
+
+--------------------------------------------------------------
+ 1/05/2024
+ Hice esta misma pregunta ("¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?") habiendo cargado más de 50 textos en la base de datos y los
+ resultados son decepcionantes. No tienen nada que ver con la pregunta. No siquiera aparece la palabra conciencia por ninguna parte. Y es indiferente si el algoritmo
+ es distancia de coseno, producto interno o distancia L2.
