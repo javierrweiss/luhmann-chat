@@ -9,3 +9,4 @@ pdf2image==1.16.3
 pdfminer-six==20221105
 azure-core==1.29.5
 azure-storage-blob==12.19.0
+sentence-transformers==2.7.0
