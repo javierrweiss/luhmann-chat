@@ -19,7 +19,9 @@
         camel-snake-kebab/camel-snake-kebab                      {:mvn/version "0.4.3"}
         metosin/jsonista                                         {:mvn/version "0.3.8"}
         missionary/missionary                                    {:mvn/version "b.39"}
-        manifold/manifold                                        {:mvn/version "0.4.2"}}
+        manifold/manifold                                        {:mvn/version "0.4.2"}
+        org.apache.tika/tika-core                                {:mvn/version "2.9.2"}
+        org.apache.tika/tika-parsers-standard-package            {:mvn/version "2.9.2"}}
 
  :aliases {:jdk-17 {:jvm-opts ["--add-modules" "jdk.incubator.foreign"
                                "--enable-native-access=ALL-UNNAMED"]}
