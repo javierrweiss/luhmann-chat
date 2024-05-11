@@ -17,17 +17,17 @@
   [pregunta algoritmo]
   (let [req (cohere/chat {:message pregunta
                           :search_queries_only true})
-        claves (when (== 200 (:status req))
-                 (-> req :body :search-queries :text))]
-    (-> [claves]
-        (embed "search_query")
-        :embeddings
-        (buscar algoritmo))))
-
+        claves (some->> req :search-queries (map :text))]
+    (some-> claves
+            vec
+            (embed "search_query")
+            :embeddings
+            (buscar algoritmo))))
+ 
 ;; Se podría hacer como una especie de round-robin usando los tres algoritmos de búsqueda y luego hacer un re-ranking
 
 (comment
-
+  
   (def emb (-> ["¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?"]
                (embed "search_query")))
   
@@ -51,8 +51,8 @@
 
   (tap> (cohere/chat {:message "¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?"
                       :search_queries_only true}))
- 
-  (tap> (embeber-y-buscar-con-keywords "Welche Rolle spielt das Bewusstsein in die Kommunikation?" :l2-distance))
+    
+  (tap> (embeber-y-buscar-con-keywords "Welche Rolle spielt das Bewusstsein in die Kommunikation?" :cosine-distance))
 
   (def r (-> (embed ["¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?"])
              :embeddings))

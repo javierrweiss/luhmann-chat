@@ -2,7 +2,8 @@
   (:require [javierweiss.backend.configuracion.config :refer [configuracion-llm]]
             [javierweiss.backend.api-wrappers.httpclient :refer [GET POST PUT]]
             [javierweiss.backend.utils.json :as json]
-            [com.brunobonacci.mulog :as u]))
+            [com.brunobonacci.mulog :as u])
+  (:import java.io.IOException))
 
 (def ^:private url "https://api.cohere.ai/v1") 
 
@@ -51,12 +52,23 @@
                  frequency_penalty (assoc :frequency_penalty frequency_penalty)
                  presence_penalty (assoc :presence_penalty presence_penalty)
                  tools (assoc :tools tools)
-                 tool_results (assoc :tool_results tool_results))]
-    (POST (str url "/chat") {:oauth-token token
-                             :headers {"Content-Type" "application/json"
-                                       "Accept" "application/json"}
-                             :body (json/encode params)})))
-
+                 tool_results (assoc :tool_results tool_results))
+        {:keys [status body error]} (POST (str url "/chat") {:oauth-token token
+                                                             :headers {"Content-Type" "application/json"
+                                                                       "Accept" "application/json"}
+                                                             :body (json/encode params)})]
+    (cond 
+      (== status 200) body
+      (== status 429) (do
+                        (u/log ::error-en-request-chat :status status :mensaje error)
+                        (throw (java.io.IOException. "Límite de solicitudes alcanzado")))
+      (== status 401) (do 
+                        (u/log ::error-en-request-chat :status status :mensaje error)
+                        (throw (java.io.IOException. "Token inválido")))
+      (>= status 400) (do 
+                        (u/log ::error-en-request-chat :status status :mensaje error)
+                        (throw (java.io.IOException. error)))
+      :else (u/log ::respuesta-a-request-chat :status status :mensaje body))))
 
 (defn embed
   "https://docs.cohere.com/reference/embed
@@ -78,7 +90,7 @@
            input_type
            embedding_types
            truncate]
-    :or {model "embed-multilingual-v2.0"}}]
+    :or {model "embed-multilingual-v3.0"}}]
   {:pre [(some? texts)]}
   (let [params (cond-> {}
                  texts (assoc :texts texts)
@@ -90,13 +102,22 @@
                                                               :headers {"Content-Type" "application/json"
                                                                         "Accept" "application/json"}
                                                               :body (json/encode params)})]
-    (if (== status 200)
-      (let [{:keys [embeddings texts]} body]
-        {:embeddings embeddings
-         :texts texts})
-      (u/log ::error-en-request-embedding :status status :mensaje error))))
+    (cond
+      (== status 200) (let [{:keys [embeddings texts]} body]
+                        {:embeddings embeddings
+                         :texts texts})
+      (== status 429) (do
+                        (u/log ::error-en-request-embedding :status status :mensaje error)
+                        (throw (java.io.IOException. "Límite de solicitudes alcanzado")))
+      (== status 401) (do
+                        (u/log ::error-en-request-embedding :status status :mensaje error)
+                        (throw (java.io.IOException. "Token inválido")))
+      (>= status 400) (do
+                        (u/log ::error-en-request-embedding :status status :mensaje error)
+                        (throw (java.io.IOException. error)))
+      :else (u/log ::respuesta-a-request-embedding :status status :mensaje body))))
 
-
+ 
 (comment
   (let [message "Hola"
         model nil

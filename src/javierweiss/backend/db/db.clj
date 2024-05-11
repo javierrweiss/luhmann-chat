@@ -25,18 +25,18 @@
   (throw (IllegalArgumentException. "Opción no implementada")))
 
 
-
-(defmulti crea-tabla-principal (fn [conf _] (:seleccion conf)))
+ 
+(defmulti crea-tabla-principal :seleccion)
 
 (defmethod crea-tabla-principal :aws
- [_ vector-size]
- (crear-tabla-archivo-luhmann full-options vector-size))
+ [_]
+ (crear-tabla-archivo-luhmann full-options))
 
 (defmethod crea-tabla-principal :azure
-  [_ vector-size]
-  (crear-tabla-archivo-luhmann conn-url vector-size))
+  [_]
+  (crear-tabla-archivo-luhmann conn-url))
 
-(defmethod crea-tabla-principal :default [_ _]
+(defmethod crea-tabla-principal :default [_]
   (throw (IllegalArgumentException. "Opción no implementada")))
 
 
@@ -70,6 +70,13 @@
   (require '[javierweiss.backend.retrieve.retrieve :refer [emb]])
   
   (buscar (:embeddings emb) :l2-distance)
+
+  (crea-tabla-principal configuracion-db)
+ 
+  (crear-tabla)
+
+  (ns-unmap *ns* 'crea-tabla-principal)
+
   )
 
 

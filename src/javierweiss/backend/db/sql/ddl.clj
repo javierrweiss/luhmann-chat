@@ -6,14 +6,14 @@
 
 (defn crear-tabla-archivo-luhmann
   "Recibe mapa de conexión y el tamaño del vector para el embedding (e.g. para la API de Cohere son 768)"
-  [opts vector-size]
+  [opts]
   (let [enunciado (sql/format {:create-table [:archivo-luhmann :if-not-exists]
                                :with-columns [[:id :bigserial [:not nil]]
                                               [:referencia :varchar]
                                               [:pagina :int]
                                               [:contenido :varchar]
                                               [:tokens :int]
-                                              [:embedding [:vector vector-size]] 
+                                              [:embedding :vector] 
                                               [[:primary-key :id]]]})]
     (try
       (ejecuta-sentencia enunciado opts)

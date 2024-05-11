@@ -1,5 +1,8 @@
-(ns javierweiss.backend.split.splitters.langchainsplitter
+(ns javierweiss.backend.split.splitters.langchainsplitter 
   (:require [libpython-clj2.python :as py :refer [py. py.. py.-]]))
+
+;; Es importante mantener cierta proporción entre el tamaño del trozo (chunk-size) y el tamaño del vector para el embedding. 
+;; El tamaño del trozo debe ser menor en proporción.
 
 (def splitter (py/from-import langchain.text_splitter CharacterTextSplitter))
 
@@ -7,17 +10,17 @@
 
 (defn langchain-split-documents
   "Recibe una lista de objetos del tipo Documento y devuelve otra lista de objetos de Documentos"
-  [splitter doc & {:keys [size overlap] :or {size 750 overlap 10}}] 
+  [splitter doc & {:keys [size overlap] :or {size 512 overlap 150}}] 
   (py. (splitter :chunk_size size :chunk_overlap overlap) split_documents doc))
 
 (defn langchain-create-documents
   "Recibe un string y devuelve una lista de tipo documentos"
-  [splitter doc & {:keys [size overlap] :or {size 750 overlap 10}}]
+  [splitter doc & {:keys [size overlap] :or {size 512 overlap 150}}]
   (py. (splitter :chunk_size size :chunk_overlap overlap) create_documents doc))
 
 (defn langchain-split-text
   "Recibe un string y devuelve un vector de strings"
-  [splitter doc & {:keys [size overlap] :or {size 750 overlap 10}}]
+  [splitter doc & {:keys [size overlap] :or {size 512 overlap 150}}]
   (py. (splitter :chunk_size size :chunk_overlap overlap) split_text doc))
 
 

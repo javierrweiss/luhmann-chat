@@ -15,7 +15,7 @@
                                     (u/log ::generando-embeddings :cantidad-documentos len)
                                     (cohere/embed {:texts documents
                                                    :input_type tipo-input
-                                                   :model "embed-multilingual-v2.0"
+                                                   :model "embed-multilingual-v3.0"
                                                    :truncate "END"}))
       (> len 96) (let [docs (partition 96 documents)]
                    (u/log ::generando-embeddings-en-paralelo :cantidad-documentos len)
@@ -23,7 +23,7 @@
                     (pmap                                                                    ;; En verdad quiero usar pmap??
                      #(cohere/embed {:texts %
                                      :input_type tipo-input
-                                     :model "embed-multilingual-v2.0"
+                                     :model "embed-multilingual-v3.0"
                                      :truncate "END"})
                      docs)))
       :else (throw (IllegalArgumentException. "El objeto documento no puede estar vacío"))))) ;; En verdad quiero lanzar una excepción??

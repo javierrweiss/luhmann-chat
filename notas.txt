@@ -42,3 +42,9 @@ Creo que no es buena idea usar cohere-clojure. Hay cosas que no están implement
  Hice esta misma pregunta ("¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?") habiendo cargado más de 50 textos en la base de datos y los
  resultados son decepcionantes. No tienen nada que ver con la pregunta. No siquiera aparece la palabra conciencia por ninguna parte. Y es indiferente si el algoritmo
  es distancia de coseno, producto interno o distancia L2.
+
+----------------------------------------------------------------
+ 5/5/2024
+ Hay algo extraño con los registros cargados en la base de datos. Los embeddings se corresponden sólo con 34 obras de las 107 que tenemos en el Blob Storage
+
+ No es suficiente un overlap de 10

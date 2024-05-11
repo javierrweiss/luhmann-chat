@@ -27,7 +27,6 @@
   [url & [request callback {:keys [async] :or {async false}}]]
   (send-http-request hk-client/put url request callback async))
 
-
 (comment  
    
  (def sol (GET "https://api.publicapis.org/entries" nil nil {:async true}))

@@ -20,6 +20,7 @@
 
 (def configuracion-llm (obtener-configuracion :llm-service :cohere))
 
+(def configuracion-llm-huggingface (obtener-configuracion :llm-service :huggingface))
 
 (comment
 
