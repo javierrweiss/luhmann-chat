@@ -47,6 +47,8 @@
 
   ;; Indice 
   (ejecuta-sentencia ["SET maintenance_work_mem = '8GB'"] conn-url)
+  ;; Para crear el índice debo el campo embedding debe tener un tamaño definido de vector
+  (ejecuta-sentencia ["ALTER TABLE archivo_luhmann ALTER COLUMN embedding TYPE VECTOR(768)"] conn-url)
   (ejecuta-sentencia ["CREATE INDEX ON archivo_luhmann USING hnsw (embedding vector_cosine_ops)"] conn-url)
 
   (ejecuta-sentencia ["SELECT phase, round(100.0 * blocks_done / nullif(blocks_total, 0), 1) AS percent FROM pg_stat_progress_create_index"] conn-url)
@@ -71,7 +73,7 @@
   (tap> (->> (ejecuta-sentencia ["SELECT DISTINCT(referencia)
                            FROM archivo_luhmann"] conn-url)
              (map :archivo_luhmann/referencia)))
- 
+
   (tap> (ejecuta-sentencia ["SELECT referencia, COUNT(*) AS Numero_de_referencias
                             FROM archivo_luhmann
                             GROUP BY referencia"] conn-url))
@@ -82,21 +84,34 @@
   (ejecuta-sentencia ["SELECT COUNT(*)
                        FROM archivo_luhmann
                        WHERE referencia = 'Luhmann, Niklas-The Control of Intransparency (1997)'"] conn-url)
-  
+
   (ejecuta-sentencia ["DELETE 
                        FROM archivo_luhmann
                        WHERE referencia = 'N Luhmann Legal argumentation'"] conn-url)
 
-
   ;; Retrieving
   (require '[honey.sql :as sql]
-           '[javierweiss.backend.retrieve.retrieve :refer [emb emb2 emb3]]
+           #_'[javierweiss.backend.retrieve.retrieve :refer [emb emb2 emb3]]
            '[next.jdbc.types :as types]
            '[clojure.string :as string])
 
   (sql/register-op! :<=> :ignore-nil true)
 
   (count (:embeddings emb))
+
+  (let [algoritmo :cosine-distance
+        embeddings_consulta [[0.1389712   0.05407694 -0.05366667 0.25060734  0.01776442
+                              0.0835482]]
+        algo (case algoritmo
+               :cosine-distance  :<=>
+               :l2-distance  :<->
+               :inner-product :<#>)
+        emb (->> embeddings_consulta first (interpose ", ") (apply str))
+        consulta (sql/format {:select [:contenido :referencia]
+                              :from :archivo-luhmann
+                              :order-by [[[algo :embedding [:inline (str "[" emb "]")]]]]
+                              :limit 5})]
+    (ejecuta-sentencia consulta conn-url))
 
   (let [sql1 (sql/format {:select [:contenido :referencia]
                           :from :archivo-luhmann

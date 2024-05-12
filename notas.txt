@@ -40,7 +40,7 @@ Creo que no es buena idea usar cohere-clojure. Hay cosas que no están implement
 --------------------------------------------------------------
  1/05/2024
  Hice esta misma pregunta ("¿Cuál es el rol de la conciencia en la comunicación, según Niklas Luhmann?") habiendo cargado más de 50 textos en la base de datos y los
- resultados son decepcionantes. No tienen nada que ver con la pregunta. No siquiera aparece la palabra conciencia por ninguna parte. Y es indiferente si el algoritmo
+ resultados son decepcionantes. No tienen nada que ver con la pregunta. Ni siquiera aparece la palabra conciencia por ninguna parte. Y es indiferente si el algoritmo
  es distancia de coseno, producto interno o distancia L2.
 
 ----------------------------------------------------------------
@@ -48,3 +48,22 @@ Creo que no es buena idea usar cohere-clojure. Hay cosas que no están implement
  Hay algo extraño con los registros cargados en la base de datos. Los embeddings se corresponden sólo con 34 obras de las 107 que tenemos en el Blob Storage
 
  No es suficiente un overlap de 10
+
+---------------------------------------------------------------
+11/5/2024
+Tengo un problema serio con los embeddings. Todos deben tener la misma dimensión, tanto durante el guardado como en la recuperación. Además, el tamaño de los
+chunks debe coincidir con la dimensión de los embeddings. Estoy teniendo chunks de más de 1000 tokens para vectores de 758 (también nos equivocamos en el embedding
+y llamamos al modelo 2 con 768 dimensiones, en vez del modelo 3 con 1024). 
+Hay que reducir aún más el tamaño del splitting. Actualmente lo tenemos en 512. 
+Y hay que conseguir un modelo de embedding en HuggingFace que alcance los más de mil tokens. 
+e.g. sentence-transformers/all-MiniLM-L6-v2 crea embeddings de 384, por lo que soporta chunks de 256 palabras, cortando el exceso. 
+Un problema es el vector store. Crear el campo sin determinar el tamaño te impide crear un índice, lo que va a redundar en menor calidad y performance de la 
+búsqueda. ¿Qué hacer? ¿Crear una tabla por dimensión? 
+
+Hay que pensar en introducir el chunk-size, el overlap en la función principal de ingestión y si se decide crear una nueva tabla por dimensión, ver cómo se
+inyecta esa parámetro también.
+
+Pero más importante, ahora, ¿qué hacer? Tengo vectores de dimensión 768 en la base de datos. He superado el límite de requests en Cohere para embeddings.
+Creo que tendría que conseguir modelos que produzcan embeddings de dimensión 768 o 1024 y que tenga cierta tolerancia de textos largos (> 1000 tokens)
+
+Estoy contando mal los tokens.

@@ -19,7 +19,7 @@
         emb (->> embeddings_consulta first (interpose ", ") (apply str))
         consulta (sql/format {:select [:contenido :referencia]
                               :from :archivo-luhmann
-                              :order-by [[[algo :embedding [:inline emb]]]]
+                              :order-by [[[algo :embedding [:inline (str "[" emb "]")]]]]
                               :limit 5})]
     (try
       (ejecuta-sentencia consulta opts)
@@ -30,7 +30,8 @@
   
 
   (let [algoritmo :cosine-distance 
-        embeddings_consulta [(into [] (take 100 (repeatedly rand)))]
+        embeddings_consulta [[0.1389712   0.05407694 -0.05366667 0.25060734  0.01776442
+                              0.0835482]]
         algo (case algoritmo
                :cosine-distance  :<=>
                :l2-distance  :<->
@@ -38,7 +39,7 @@
         emb (->> embeddings_consulta first (interpose ", ") (apply str))
         consulta (sql/format {:select [:contenido :referencia]
                               :from :archivo-luhmann
-                              :order-by [[[algo :embedding [:inline emb]]]]
+                              :order-by [[[algo :embedding [:inline (str "[" emb "]")]]]]
                               :limit 5})]
     consulta)
   

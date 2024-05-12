@@ -13,7 +13,7 @@
                                               [:pagina :int]
                                               [:contenido :varchar]
                                               [:tokens :int]
-                                              [:embedding :vector] 
+                                              [:embedding [:vector 1024]] 
                                               [[:primary-key :id]]]})]
     (try
       (ejecuta-sentencia enunciado opts)
