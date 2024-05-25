@@ -40,8 +40,12 @@
   "Recibe `documents` y `tipo-input` (string) que pueder search_document, search_query, classification ó clustering"
   (partial embed-chunk configuracion-llm)) 
 
-(def embed-local
-  "Realiza embedding localmente usando Sentence Transformer. Recibe como argumento un vector de strings y devuelve embedding (vector de doubles)"
+(def embed-384
+  "Realiza embedding localmente usando Sentence Transformer. Recibe como argumento un vector de strings y devuelve embedding (vector de doubles) de dimension 384"
+  (partial modelo-alternativo "sentence-transformers/multi-qa-mpnet-base-dot-v1"))
+
+(def embed-1024
+  "Realiza embedding localmente usando Sentence Transformer. Recibe como argumento un vector de strings y devuelve embedding (vector de doubles)  de dimension 1024"
   (partial modelo-alternativo "sentence-transformers/multi-qa-mpnet-base-dot-v1"))
 
 (comment

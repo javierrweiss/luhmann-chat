@@ -16,9 +16,15 @@
                :cosine-distance  :<=>
                :l2-distance  :<->
                :inner-product :<#>)
+        len (count embeddings_consulta)
+        tabla (case len
+                384 :archivo-luhmann-384
+                1024 :archivo-luhmann-1024
+                768 :archivo-luhmann-768
+                (throw (IllegalArgumentException. (str "Las dimensiones del vector actual (" len ") no están soportadas por este backend"))))
         emb (->> embeddings_consulta first (interpose ", ") (apply str))
         consulta (sql/format {:select [:contenido :referencia]
-                              :from :archivo-luhmann
+                              :from tabla
                               :order-by [[[algo :embedding [:inline (str "[" emb "]")]]]]
                               :limit 5})]
     (try

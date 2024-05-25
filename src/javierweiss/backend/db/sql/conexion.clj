@@ -40,6 +40,8 @@
   (ejecuta-sentencia ["show azure.extensions"] conn-url)
   (ejecuta-sentencia ["SELECT * FROM pg_extension"] conn-url)
   (ejecuta-sentencia ["ALTER EXTENSION vector UPDATE"] conn-url)
+  (ejecuta-sentencia ["TRUNCATE archivo_luhmann"] conn-url)
+  (ejecuta-sentencia ["DROP TABLE archivo_luhmann"] conn-url)
   (connection/->pool com.zaxxer.hikari.HikariDataSource conn-url)
   (defonce ds (jdbc/get-datasource {:jdbcUrl (:jdbc-url conf)}))
   (jdbc/execute! ds ["SELECT NOW()"])
