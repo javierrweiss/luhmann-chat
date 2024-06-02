@@ -3,8 +3,11 @@
             [javierweiss.backend.load.load :refer [load-all-from-storage load-document-from-storage]]
             [javierweiss.backend.cloudclients.listados :refer [obras]]
             [javierweiss.backend.utils.utils :refer [py-obj->clj-map]]
+            [javierweiss.backend.embed.embed :refer [embed-384]]
+            [javierweiss.backend.split.splitters.custom-semantic-search :refer [aplicar-semantic-chunking]]
             [libpython-clj2.python :as py]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [clojure.string :as s])
   (:import org.apache.tika.Tika
            org.apache.tika.exception.TikaException
            org.xml.sax.SAXException
@@ -19,6 +22,23 @@
 
 (tap> organisation-und-entscheidung-docs)
 (tap> legal-argumentation-doc)
+  
+(def legal-argumentation-content (py/py.- (first legal-argumentation-doc) "page_content"))
+
+(def textos (aplicar-semantic-chunking legal-argumentation-content 3 512 384 95))
+
+ (tap> (s/split legal-argumentation-content #"(?<=[.?!\n\n])\s+"))
+ 
+(defn dividir-y-agrupar
+  [doc partition-size]
+  (as-> doc c
+    (s/split c #"(?<=[.?!\n\n])\s+")
+    (partition partition-size c)
+    (map #(apply str %) c)
+    (mapv vector c)))
+
+(def embs (embed-384 (dividir-y-agrupar legal-argumentation-content 3)))
+
  
 (py/py. organisation-und-entscheidung-docs __len__)
 (py/py. legal-argumentation-doc __len__)

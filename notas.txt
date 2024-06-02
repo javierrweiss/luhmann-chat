@@ -67,3 +67,9 @@ Pero más importante, ahora, ¿qué hacer? Tengo vectores de dimensión 768 en l
 Creo que tendría que conseguir modelos que produzcan embeddings de dimensión 768 o 1024 y que tenga cierta tolerancia de textos largos (> 1000 tokens)
 
 Estoy contando mal los tokens.
+
+--------------------------------------------------------------------
+02/06/2024
+Python me está dando dolores de cabeza con su modelo de concurrencia. Al querer correr los embeddings localmente me encuentro con un 
+"Fatal Python error: take_gil: PyMUTEX_LOCK(gil->mutex) failed". Esto hace fallar también a la JVM 
+"A fatal error has been detected by the Java Runtime Environment: The crash happened outside the Java Virtual Machine in native code."

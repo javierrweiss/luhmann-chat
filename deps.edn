@@ -1,5 +1,5 @@
 {:paths ["src" "resources"]
- :deps {org.clojure/clojure                                      {:mvn/version "1.11.1"}
+ :deps {org.clojure/clojure                                      {:mvn/version "1.12.0-alpha12"}
         clj-python/libpython-clj                                 {:mvn/version "2.025"}
         aero/aero                                                {:mvn/version "1.1.6"}
         danielsz/cohere-clojure                                  {:git/url "https://github.com/danielsz/cohere-clojure"
@@ -21,17 +21,21 @@
         missionary/missionary                                    {:mvn/version "b.39"}
         manifold/manifold                                        {:mvn/version "0.4.2"}
         org.apache.tika/tika-core                                {:mvn/version "2.9.2"}
-        org.apache.tika/tika-parsers-standard-package            {:mvn/version "2.9.2"}}
+        org.apache.tika/tika-parsers-standard-package            {:mvn/version "2.9.2"}
+        generateme/fastmath                                      {:mvn/version "2.4.0"
+                                                                  :exclusions [com.github.haifengl/smile-mkl]}}
 
  :aliases {:jdk-17 {:jvm-opts ["--add-modules" "jdk.incubator.foreign"
                                "--enable-native-access=ALL-UNNAMED"]}
            :dev {:extra-paths ["dev"]
                  :extra-deps {djblue/portal                         {:mvn/version "0.55.1"}
-                              com.github.flow-storm/clojure         {:mvn/version "1.11.2-4"}
-                              com.github.flow-storm/flow-storm-dbg  {:mvn/version "3.15.2"}}
-                 :classpath-overrides {org.clojure/clojure nil} 
-                 :jvm-opts ["-Dclojure.storm.instrumentEnable=true"
-                            "-Dclojure.storm.instrumentOnlyPrefixes=javierweiss."]}
+                              ;;com.github.flow-storm/clojure         {:mvn/version "1.11.2-4"}
+                              ;;com.github.flow-storm/flow-storm-dbg  {:mvn/version "3.15.2"}
+                              }
+                ;; :classpath-overrides {org.clojure/clojure nil}
+                ;; :jvm-opts ["-Dclojure.storm.instrumentEnable=true"
+                ;;            "-Dclojure.storm.instrumentOnlyPrefixes=javierweiss."]
+                }
            :run-m {:main-opts ["-m" "javierweiss.luhmann-chat"]}
            :run-x {:ns-default javierweiss.luhmann-chat
                    :exec-fn greet
@@ -45,5 +49,5 @@
            :test {:extra-paths ["test"]
                   :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
                                io.github.cognitect-labs/test-runner
-                               {:git/tag "v0.5.1" :git/sha "dfb30dd"}}} 
+                               {:git/tag "v0.5.1" :git/sha "dfb30dd"}}}
            :neil {:project {:name javierweiss/luhmann-chat}}}}  

@@ -1,6 +1,6 @@
 (ns javierweiss.backend.retrieve.retrieve
   (:require [javierweiss.backend.db.db :refer [buscar]]
-            [javierweiss.backend.embed.embed :refer [embed embed-local]]
+            [javierweiss.backend.embed.embed :refer [embed]]
             [javierweiss.backend.api-wrappers.cohere :as cohere]))
 
 ;; Vamos a tomar la pregunta del usuario, la vamos a embeber, luego hacemos una búsqueda, (luego un reranking?) y por último introducimos los

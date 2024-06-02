@@ -42,11 +42,15 @@
 
 (def embed-384
   "Realiza embedding localmente usando Sentence Transformer. Recibe como argumento un vector de strings y devuelve embedding (vector de doubles) de dimension 384"
-  (partial modelo-alternativo "sentence-transformers/multi-qa-mpnet-base-dot-v1"))
+  (partial modelo-alternativo "sentence-transformers/multi-qa-MiniLM-L6-cos-v1"))
+
+(def embed-768
+  "Realiza embedding localmente usando Sentence Transformer. Recibe como argumento un vector de strings y devuelve embedding (vector de doubles) de dimension 384"
+  (partial modelo-alternativo "sentence-transformers/gtr-t5-xxl"))
 
 (def embed-1024
   "Realiza embedding localmente usando Sentence Transformer. Recibe como argumento un vector de strings y devuelve embedding (vector de doubles)  de dimension 1024"
-  (partial modelo-alternativo "sentence-transformers/multi-qa-mpnet-base-dot-v1"))
+  (partial modelo-alternativo "sentence-transformers/multi-qa-mpnet-base-dot-v1")) ;; No he conseguido un modelo de dimensión 1024
 
 (comment
 

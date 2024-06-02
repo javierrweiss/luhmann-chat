@@ -8,10 +8,14 @@
 (u/start-publisher! {:type :console}) 
 (def p (p/open {:launcher :vs-code}))
 (add-tap #'p/submit)   
-(require '[flow-storm.api :as fs-api])
+#_(require '[flow-storm.api :as fs-api])
 #_(fs-api/local-connect) ;; falla porque estamos en un container
  
 (comment
-(p/close) 
-(tap> (+ 1 1))   
-)
+  (p/close) 
+  (tap> (+ 1 1)) 
+  
+  *repl*
+  (sync-deps)
+  (add-lib 'cnuernber/ham-fisted)
+  )

@@ -17,4 +17,5 @@
  :llm-service  {:cohere {:cohere-key #env COHEREKEY}
                 :openai {:openai-key #env OPENAIKEY}
                 :anthropic {:anthropic-key #env ANTHROPICKEY}
+                :huggingface {:huggingface-key #env HUGGINGFACEKEY}
                 :custom-model {}}}
